@@ -1,0 +1,14 @@
+# Dependencias y compilado
+node_modules
+dist
+
+# Variables locales
+.env.local
+.env.*.local
+
+# Editor y sistema
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.log

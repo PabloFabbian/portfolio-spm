@@ -1,0 +1,171 @@
+@import 'tailwindcss';
+
+/* ----------------------------------------------------------------
+   Tokens de diseño (Tailwind v4: la configuración vive en el CSS).
+   Cambiar un color acá lo cambia en todo el sitio.
+   ---------------------------------------------------------------- */
+@theme {
+  --color-ink: #0b0b0b; /* negro */
+  --color-paper: #ece6da; /* hueso (fondo) */
+  --color-rec: #c4301f; /* rojo de grabación (acento) */
+
+  --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, Menlo, monospace;
+
+  --ease-cut: cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      font-size: 15px;
+    }
+  }
+
+  ::selection {
+    background-color: var(--color-rec);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-rec);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ----------------------------------------------------------------
+   Utilidades propias del lenguaje visual
+   ---------------------------------------------------------------- */
+
+/* Títulos: Anton en mayúsculas */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* Contorno del color del fondo para títulos de varias líneas.
+   Las tildes de Anton suben mucho y tocan la línea de arriba: el contorno
+   las recorta y se leen. En fondos negros: knockout [--ko:var(--color-ink)] */
+@utility knockout {
+  text-shadow:
+    3px 0 0 var(--ko, var(--color-paper)),
+    -3px 0 0 var(--ko, var(--color-paper)),
+    0 3px 0 var(--ko, var(--color-paper)),
+    0 -3px 0 var(--ko, var(--color-paper)),
+    2px 2px 0 var(--ko, var(--color-paper)),
+    -2px 2px 0 var(--ko, var(--color-paper)),
+    2px -2px 0 var(--ko, var(--color-paper)),
+    -2px -2px 0 var(--ko, var(--color-paper));
+}
+
+/* Etiquetas chicas en mono, negrita y espaciadas */
+@utility eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Cortes en ángulo (sin bordes redondeados) */
+@utility cut-sm {
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+}
+@utility cut-md {
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+}
+@utility cut-tab {
+  clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%, 0 20px);
+}
+@utility cut-tab-sm {
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 14px);
+}
+@utility cut-hero {
+  clip-path: polygon(16% 0, 100% 0, 100% 84%, 84% 100%, 0 100%, 0 16%);
+}
+@utility cut-hero-sm {
+  clip-path: polygon(14% 0, 100% 0, 100% 86%, 86% 100%, 0 100%, 0 14%);
+}
+@utility cut-portrait {
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 88% 100%, 0 100%);
+}
+@utility cut-portrait-sm {
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 86% 100%, 0 100%);
+}
+@utility cut-shadow {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12% 100%);
+}
+
+/* Borde granulado color hueso detrás del nombre de la portada.
+   Se ve solo donde el nombre pasa por encima de la foto. */
+.halo {
+  color: var(--color-paper);
+  text-shadow:
+    4px 0 0 var(--color-paper),
+    -4px 0 0 var(--color-paper),
+    0 4px 0 var(--color-paper),
+    0 -4px 0 var(--color-paper),
+    3px 3px 0 var(--color-paper),
+    -3px 3px 0 var(--color-paper),
+    3px -3px 0 var(--color-paper),
+    -3px -3px 0 var(--color-paper);
+  filter: url(#spm-grunge);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 1024px) {
+  .halo {
+    text-shadow:
+      7px 0 0 var(--color-paper),
+      -7px 0 0 var(--color-paper),
+      0 7px 0 var(--color-paper),
+      0 -7px 0 var(--color-paper),
+      5px 5px 0 var(--color-paper),
+      -5px 5px 0 var(--color-paper),
+      5px -5px 0 var(--color-paper),
+      -5px -5px 0 var(--color-paper);
+  }
+}
+
+/* Piloto de grabación que titila */
+@keyframes rec-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+.rec-blink {
+  animation: rec-blink 1.4s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-blink {
+    animation: none;
+  }
+}

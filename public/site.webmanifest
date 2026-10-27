@@ -1,0 +1,12 @@
+{
+  "name": "Santiago Pérez Mejías · Productor audiovisual",
+  "short_name": "SPM",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#0B0B0B",
+  "background_color": "#ECE6DA",
+  "display": "browser",
+  "lang": "es-AR"
+}
