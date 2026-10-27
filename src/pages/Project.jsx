@@ -3,7 +3,7 @@ import { Header } from '../components/Header'
 import { Marquee } from '../components/Marquee'
 import { MediaCarousel } from '../components/MediaCarousel'
 import { Page } from '../components/Page'
-import { findProject, galleryFor } from '../data/projects'
+import { findProject } from '../data/projects'
 import { site } from '../data/site'
 import { useDocumentTitle, usePageScroll } from '../hooks/usePageScroll'
 import { NextProject } from '../sections/project/NextProject'
@@ -41,7 +41,7 @@ export default function Project() {
           />
         )}
         {project.tasks && <ProjectTasks tasks={project.tasks} intro={project.tasksIntro} />}
-        <MediaCarousel items={galleryFor(project)} title={project.galleryTitle ?? 'Clips y fotos'} />
+        {project.gallery.length > 0 && <MediaCarousel items={project.gallery} title={project.galleryTitle} />}
         {project.credits && <ProjectCredits credits={project.credits} />}
       </main>
       <NextProject next={next} position={((index + 1) % total) + 1} total={total} />

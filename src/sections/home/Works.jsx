@@ -36,9 +36,8 @@ export function Works() {
                   to={projectUrl(project)}
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
-                  className={`flex w-full items-center gap-[18px] border-b-[3px] border-ink py-4 pr-4 transition-[background-color,color,padding] duration-200 ${
-                    isActive ? 'bg-ink pl-7 text-paper' : 'pl-4'
-                  }`}
+                  className={`flex w-full items-center gap-[18px] border-b-[3px] border-ink py-4 pr-4 transition-[background-color,color,padding] duration-200 ${isActive ? 'bg-ink pl-7 text-paper' : 'pl-4'
+                    }`}
                 >
                   <span className="flex min-w-0 flex-auto flex-col gap-1.5">
                     <span className="display text-[length:clamp(36px,4.6vw,64px)] leading-none">{project.title}</span>
@@ -111,7 +110,7 @@ function Stage({ project }) {
           <Cover project={project} dotSize={project.tone.size} />
           {!project.media.cover && (
             <span className="eyebrow absolute top-4 left-4 border-2 border-ink bg-paper px-3 py-2 tracking-[.1em] text-ink">
-              [Clip de {project.title}]
+              {project.media.coverLabel}
             </span>
           )}
         </motion.div>

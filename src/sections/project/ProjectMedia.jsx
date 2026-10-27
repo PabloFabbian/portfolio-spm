@@ -1,37 +1,40 @@
 import { useReducedMotion } from 'framer-motion'
-import { photos } from '../../assets/photos'
 import { Reveal } from '../../components/Reveal'
+import { photos } from '../../data/site'
 
 function Corner({ className }) {
   return <span aria-hidden="true" className={`absolute size-8 border-paper lg:size-14 ${className}`} />
 }
 
-/** Video principal del proyecto, enmarcado como el visor de una cámara */
+/** Video (o imagen) principal del proyecto, enmarcado como el visor de una cámara */
 export function ProjectMedia({ project }) {
   const reduce = useReducedMotion()
-  const { clip, poster, clipLabel, timecode, specs } = project.media
+  const { clip, image, cover, clipLabel, shortClipLabel, timecode, specs } = project.media
   const fallback = photos.frente
+  const hasMedia = Boolean(clip || image)
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-8 lg:px-10 lg:pb-14">
       <Reveal className="relative aspect-[4/5] overflow-hidden bg-ink text-paper md:aspect-video lg:aspect-[21/9]">
-        {clip ? (
+        {clip && (
           <video
             className="absolute inset-0 h-full w-full object-cover"
             src={clip}
-            poster={poster ?? undefined}
+            poster={cover ?? undefined}
             muted
             loop
             playsInline
             autoPlay={!reduce}
             preload="metadata"
           />
-        ) : (
-          // Provisorio hasta que llegue el clip: la foto de Santi atenuada
+        )}
+        {!clip && image && (
+          <img src={image} alt={project.title} className="absolute inset-0 h-full w-full object-cover" />
+        )}
+        {!hasMedia && fallback && (
+          // Provisorio hasta que suban el video: la foto de la portada atenuada
           <img
             src={fallback.src}
-            srcSet={fallback.srcSet}
-            sizes="(min-width: 1440px) 1360px, 100vw"
             alt=""
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-55"
@@ -48,10 +51,10 @@ export function ProjectMedia({ project }) {
           REC
         </span>
 
-        {!clip && (
+        {!hasMedia && (
           <>
             <span className="eyebrow absolute bottom-[54px] left-5 bg-paper px-2.5 py-1.5 text-[11px] tracking-[.1em] text-ink lg:hidden">
-              [Clip en loop · 10 a 15 s]
+              {shortClipLabel}
             </span>
             <span className="eyebrow absolute top-10 left-24 hidden bg-paper px-3 py-2 tracking-[.1em] text-ink lg:block">
               {clipLabel}

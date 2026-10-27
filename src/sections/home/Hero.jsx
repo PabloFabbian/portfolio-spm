@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { photos } from '../../assets/photos'
 import { ArrowRight, Play } from '../../components/icons'
-import { site } from '../../data/site'
+import { photos, site } from '../../data/site'
 import { EASE } from '../../lib/tokens'
 
 // Sangrías escalonadas de cada línea del nombre (celular / escritorio)
@@ -98,29 +97,29 @@ function HeroPhoto() {
       transition={{ duration: 1, ease: EASE, delay: 0.25 }}
     >
       <div className="relative aspect-square overflow-hidden bg-ink cut-hero-sm lg:absolute lg:inset-0 lg:aspect-auto lg:cut-hero">
-        <img
-          src={frente.src}
-          srcSet={frente.srcSet}
-          sizes="(min-width: 1024px) 580px, 100vw"
-          width={frente.width}
-          height={frente.height}
-          alt={frente.alt}
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <motion.img
-          src={perfil.src}
-          srcSet={perfil.srcSet}
-          sizes="(min-width: 1024px) 580px, 100vw"
-          width={perfil.width}
-          height={perfil.height}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
-          initial={{ opacity: 0 }}
-          animate={reduce ? { opacity: 0 } : { opacity: [0, 0, 1, 1, 0] }}
-          transition={{ duration: 10, times: [0, 0.42, 0.5, 0.92, 1], ease: 'easeInOut', repeat: Infinity }}
-        />
+        {frente && (
+          <img
+            src={frente.src}
+            width={frente.width}
+            height={frente.height}
+            alt={frente.alt}
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+        {perfil && (
+          <motion.img
+            src={perfil.src}
+            width={perfil.width}
+            height={perfil.height}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={{ opacity: frente ? 0 : 1 }}
+            animate={reduce || !frente ? undefined : { opacity: [0, 0, 1, 1, 0] }}
+            transition={{ duration: 10, times: [0, 0.42, 0.5, 0.92, 1], ease: 'easeInOut', repeat: Infinity }}
+          />
+        )}
       </div>
 
       <motion.div

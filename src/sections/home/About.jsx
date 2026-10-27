@@ -1,10 +1,9 @@
-import { photos } from '../../assets/photos'
 import { Reveal } from '../../components/Reveal'
-import { site } from '../../data/site'
+import { photos, site } from '../../data/site'
 
 export function About() {
   const { about } = site
-  const { perfil } = photos
+  const retrato = photos.sobreMi
 
   return (
     <section id="sobre-mi" className="mx-auto max-w-[1440px] px-4 py-14 lg:px-10 lg:py-24">
@@ -12,16 +11,16 @@ export function About() {
         <Reveal className="relative min-w-0 pr-4 pb-4 lg:flex-[0_1_460px] lg:pr-6 lg:pb-6">
           <div aria-hidden="true" className="absolute top-4 right-0 bottom-0 left-4 bg-rec cut-shadow lg:top-6 lg:left-6" />
           <div className="relative aspect-square overflow-hidden bg-ink cut-portrait-sm lg:aspect-[4/5] lg:cut-portrait">
-            <img
-              src={perfil.src}
-              srcSet={perfil.srcSet}
-              sizes="(min-width: 1024px) 440px, 100vw"
-              width={perfil.width}
-              height={perfil.height}
-              alt={perfil.alt}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            {retrato && (
+              <img
+                src={retrato.src}
+                width={retrato.width}
+                height={retrato.height}
+                alt={retrato.alt}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
           </div>
         </Reveal>
 
