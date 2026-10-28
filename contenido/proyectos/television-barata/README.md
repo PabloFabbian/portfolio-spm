@@ -1,6 +1,6 @@
 # Fotos y videos · Televisión Barata
 
-Subí acá los archivos de este proyecto **con estos nombres** (en minúsculas). Se toman solos: no hace falta tocar código.
+Lo más fácil es cambiarlos desde el editor de la web (`/editar` → **Proyectos**). Si los subís a mano, van acá **con estos nombres** (en minúsculas):
 
 | Archivo | Dónde aparece | Formato recomendado |
 | --- | --- | --- |
@@ -13,6 +13,6 @@ Subí acá los archivos de este proyecto **con estos nombres** (en minúsculas).
 - Para fotos sirven `.jpg`, `.jpeg`, `.png` y `.webp`; para videos, `.mp4` y `.webm`.
 - Para reemplazar un archivo, subí otro con el mismo nombre. Si tiene otra extensión, borrá el anterior.
 - Mientras falte un archivo, en la web se ve un aviso del estilo **[Falta afiche.jpg]**.
-- Los textos de este proyecto (títulos de las piezas, créditos, etc.) están en [`contenido/proyectos.js`](../../proyectos.js).
+- Los textos de este proyecto (títulos de las piezas, créditos, etc.) están en [`contenido/proyectos.json`](../../proyectos.json).
 
 Guía completa: [COMO-EDITAR.md](../../../COMO-EDITAR.md)

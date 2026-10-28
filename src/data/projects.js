@@ -1,17 +1,21 @@
 /*
- * Traduce contenido/proyectos.js (escrito en castellano, para editar sin saber código)
- * a los datos que usan los componentes, y suma las fotos y videos de cada carpeta
- * contenido/proyectos/<carpeta>/ según el nombre del archivo.
- * Los textos se cambian en contenido/proyectos.js.
+ * Traduce contenido/proyectos.json a los datos que usan los componentes, y suma las fotos
+ * y videos de cada carpeta contenido/proyectos/<carpeta>/ según el nombre del archivo.
+ * El contenido se cambia desde el editor (/editar) o, a mano, en contenido/proyectos.json.
  */
-import contenido from '../../contenido/proyectos.js'
+import publicado from '../../contenido/proyectos.json'
 import { groupByFolder, slugify } from './media'
+import { archivosDeVistaPrevia, vistaPrevia } from './vista-previa'
+
+const contenido = vistaPrevia?.proyectos ?? publicado
 
 const files = groupByFolder(
-  import.meta.glob(
-    '/contenido/proyectos/*/*.{jpg,jpeg,png,webp,avif,gif,mp4,webm,JPG,JPEG,PNG,WEBP,AVIF,GIF,MP4,WEBM}',
-    { eager: true, query: '?url', import: 'default' },
-  ),
+  vistaPrevia
+    ? archivosDeVistaPrevia('/contenido/proyectos/')
+    : import.meta.glob(
+        '/contenido/proyectos/*/*.{jpg,jpeg,png,webp,avif,gif,mp4,webm,JPG,JPEG,PNG,WEBP,AVIF,GIF,MP4,WEBM}',
+        { eager: true, query: '?url', import: 'default' },
+      ),
 )
 
 const COLORS = { negro: 'ink', hueso: 'paper', rojo: 'rec' }
@@ -72,15 +76,16 @@ function buildProject(p, index) {
   const imageUrl = (file) => (file?.kind === 'image' ? file.url : null)
 
   const tasks = (p.queHice?.tareas ?? []).map((t) => ({ tag: t.momento, title: t.titulo, text: t.texto }))
+  const credits = (p.creditos ?? []).map((c) => ({ role: c.rol, name: c.nombre }))
 
   return {
     slug,
     title: p.titulo ?? '',
     titleLines: p.tituloEnRenglones?.length ? p.tituloEnRenglones : [p.titulo ?? ''],
-    kicker: p.etiqueta ?? p.categoria ?? '',
+    kicker: p.etiqueta || p.categoria || '',
     category: p.categoria ?? '',
     year: p.anio ?? '',
-    meta: p.lineaEnLaLista ?? [p.categoria, p.anio].filter(Boolean).join(' · '),
+    meta: p.lineaEnLaLista || [p.categoria, p.anio].filter(Boolean).join(' · '),
     tone: {
       bg: color(p.colores?.fondo, 'ink'),
       dot: color(p.colores?.puntos, 'rec'),
@@ -97,7 +102,7 @@ function buildProject(p, index) {
       posterLabel: '[Falta afiche.jpg]',
       coverLabel: '[Falta tarjeta.jpg]',
       timecode: TIMECODES[index % TIMECODES.length],
-      specs: p.formatoDeCamara ?? null,
+      specs: p.formatoDeCamara || null,
     },
     facts: (p.ficha ?? []).map((f) => ({ label: f.dato, value: f.valor })),
     headline: p.frase ?? '',
@@ -105,9 +110,9 @@ function buildProject(p, index) {
     marquee: p.cinta?.length ? p.cinta : null,
     tasksIntro: p.queHice?.intro ?? null,
     tasks: tasks.length ? tasks : null,
-    galleryTitle: p.galeria?.titulo ?? 'Clips y fotos',
+    galleryTitle: p.galeria?.titulo || 'Clips y fotos',
     gallery: buildGallery(p.galeria, media),
-    credits: (p.creditos ?? []).map((c) => ({ role: c.rol, name: c.nombre })),
+    credits: credits.length ? credits : null,
   }
 }
 

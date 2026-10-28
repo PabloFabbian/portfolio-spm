@@ -1,6 +1,6 @@
 # Fotos de la portada y de Sobre mí
 
-Subí acá las fotos **con estos nombres** (en minúsculas). Se toman solas: no hace falta tocar código.
+Lo más fácil es cambiarlas desde el editor de la web (`/editar`, secciones **Portada** y **Sobre mí**): se achican solas. Si las subís a mano, van acá **con estos nombres** (en minúsculas):
 
 | Archivo | Dónde aparece | Formato recomendado |
 | --- | --- | --- |

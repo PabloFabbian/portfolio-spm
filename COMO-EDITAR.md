@@ -1,197 +1,88 @@
 # Cómo editar tu web
 
-Todo lo que se ve en la web (textos, fotos y videos) está en la carpeta **`contenido`**. Lo podés cambiar desde la página de GitHub, sin instalar nada. Cada cambio que guardás se publica solo en uno o dos minutos.
+Todo lo que se ve en la web (textos, fotos y videos) se cambia desde el **editor**, una página de la misma web. No hace falta instalar nada ni saber programar: se usa desde la compu o desde el celular.
 
-> Esta guía es para cuando el repositorio esté en tu cuenta de GitHub y conectado a tu cuenta de Vercel.
+> **La dirección del editor** es la de tu web con **/editar** al final. Por ejemplo: `https://tu-web.vercel.app/editar`. Guardala en favoritos: no aparece en ningún lado de la web ni en Google.
+>
+> **La clave** para publicar te la da quien configuró la web (Pablo, de PF Software).
 
-**Dónde está cada cosa:**
+---
 
-| Qué | Dónde |
+## El editor, paso a paso
+
+1. **Entrá a `/editar`.** Arriba están las secciones: **Portada**, **Sobre mí**, **Proyectos**, **Contacto** y **Compartir**.
+2. **Cambiá lo que quieras.** Nada se publica todavía: arriba a la izquierda dice cuántos cambios tenés sin publicar.
+3. **Tocá Vista previa** para ver cómo queda, en tamaño compu o celu, antes de publicar.
+4. **Tocá Publicar.** Te muestra la lista de lo que va a cambiar y te pide la clave.
+5. **Esperá uno o dos minutos.** El editor te avisa cuando el cambio ya se ve en la web.
+
+Algunas cosas útiles:
+
+- **El navegador puede recordar la clave.** La próxima vez se completa sola (o con la huella, según el celu).
+- **Si te arrepentís antes de publicar**, abajo de todo está **Deshacer los cambios sin publicar**: vuelve todo a como está en la web.
+- **Si cerrás la pestaña sin publicar, los cambios se pierden.** El navegador te avisa antes.
+- **Los textos se escriben normal**, con tildes, comillas o apóstrofos. Si querés otro párrafo, tocá **Agregar párrafo** (no hace falta apretar Enter).
+
+---
+
+## Qué se cambia en cada sección
+
+| Sección | Qué tiene |
 | --- | --- |
-| Textos de la portada, Sobre mí y Contacto | `contenido/sitio.js` |
-| Textos de cada proyecto | `contenido/proyectos.js` |
-| Fotos de la portada y de Sobre mí | `contenido/fotos/` |
-| Fotos y videos de cada proyecto | `contenido/proyectos/<nombre-del-proyecto>/` |
+| **Portada** | Tu nombre (el de arriba y el gigante), la profesión, la frase, el año, las dos fotos y las palabras de la cinta |
+| **Sobre mí** | El retrato, el título, los párrafos y la tabla de datos (Rol principal, Formación…) |
+| **Proyectos** | La lista de trabajos y, adentro de cada uno, todos sus textos, fotos y videos |
+| **Contacto** | Email, Instagram, WhatsApp y el mensaje que aparece escrito al abrir WhatsApp |
+| **Compartir** | La imagen que se ve cuando alguien comparte el link por WhatsApp, Instagram o LinkedIn |
 
 ---
 
-## Antes de empezar: 4 reglas
+## Fotos y videos
 
-1. **Cambiá solo lo que está entre comillas** `'así'`.
-2. **No borres** las comillas `' '`, las comas del final ni los signos `[ ]` y `{ }`.
-3. **Escribí cada texto en una sola línea**, sin apretar Enter adentro de las comillas. Aunque quede largo, está bien.
-4. **Si un texto lleva apóstrofo**, usá `’` en lugar de `'`, porque `'` corta el texto. Las comillas dobles `" "` sí se pueden usar.
+En cada lugar donde va una foto o un video hay tres botones: **Elegir** (o **Cambiar**) y **Quitar**.
 
-Si te equivocás, la web no se rompe: sigue mostrando la última versión que funcionaba (ver [Si algo sale mal](#si-algo-sale-mal)).
+- **Las fotos se achican solas** antes de subirse: podés elegir la foto tal cual sale del celu o de la cámara. Si es HEIC (la de los iPhone) y no se abre, exportala como JPG.
+- **Los videos** van en **MP4** (exportados en H.264, el formato más común) o WEBM, y pueden pesar **hasta 4 MB**. Para que entren: entre 10 y 15 segundos, en 720p y sin sonido (la web los muestra sin sonido). Se exportan así con CapCut, HandBrake o el programa de edición que uses.
+- **Dejá lo importante en el centro.** Según la pantalla, la web recorta un poco los bordes.
 
----
-
-## Cambiar un texto
-
-1. Entrá a tu repositorio en **github.com** y abrí la carpeta `contenido`.
-2. Abrí `sitio.js` (portada, sobre mí, contacto) o `proyectos.js` (proyectos).
-3. Tocá el **lápiz** (*Edit this file*), arriba a la derecha del archivo.
-4. Buscá el texto con **Ctrl + F** (o **Cmd + F** en Mac) y cambialo **dentro de las comillas**.
-5. Tocá **Commit changes…**, escribí qué cambiaste (por ejemplo: "Cambio la frase de la portada") y confirmá con **Commit changes**.
-6. Esperá uno o dos minutos y recargá la web.
-
-**Ejemplo:** para cambiar la frase de la portada, en `sitio.js`:
-
-```js
-frase: 'Lo más personal es lo más creativo.',
-```
-
-pasa a:
-
-```js
-frase: 'Tu nueva frase.',
-```
-
-Cada texto tiene arriba una línea que empieza con `//` explicando dónde aparece en la web. Esas líneas no se ven en la web.
-
----
-
-## Cambiar o agregar fotos y videos
-
-Las fotos y videos **se toman solos por el nombre del archivo**: no hace falta escribir nada en el código.
-
-1. Renombrá el archivo en tu compu **con el nombre exacto** de las tablas de abajo, en minúsculas (por ejemplo `afiche.jpg`).
-2. En GitHub, entrá a la carpeta donde va (por ejemplo `contenido/proyectos/el-club-debede`).
-3. Tocá **Add file → Upload files**, arrastrá el archivo y tocá **Commit changes**.
-4. Si ya había un archivo **con el mismo nombre y la misma extensión**, se reemplaza solo.
-5. Si el anterior tenía **otra extensión** (por ejemplo, el viejo es `portada-1.webp` y el nuevo `portada-1.jpg`), borrá el viejo: abrilo, tocá los tres puntos **…** y elegí **Delete file**.
-
-Mientras falte un archivo, en la web aparece un aviso del estilo **[Falta afiche.jpg]** que dice qué subir y con qué nombre.
-
-> GitHub acepta archivos de hasta 25 MB desde la página. Igual, para que la web cargue rápido, conviene que las fotos pesen menos de 400 KB y los videos menos de 6 MB.
-
----
-
-## Mapa de la web: qué se cambia dónde
-
-### Portada
-
-| Lo que ves | Archivo | Qué cambiar |
-| --- | --- | --- |
-| Nombre gigante | `contenido/sitio.js` | `nombreEnRenglones` (un renglón por línea) |
-| Nombre de arriba a la izquierda y del pie | `contenido/sitio.js` | `nombre` |
-| Recuadro negro "Productor audiovisual" | `contenido/sitio.js` | `profesion` |
-| Frase | `contenido/sitio.js` | `frase` |
-| Foto fija | `contenido/fotos/` | archivo `portada-1` |
-| Foto que aparece y desaparece | `contenido/fotos/` | archivo `portada-2` |
-| Cinta negra con palabras rojas | `contenido/sitio.js` | `cinta` |
-| "Portfolio 2026" y el año del © | `contenido/sitio.js` | `anio` |
-
-### Sobre mí
-
-| Lo que ves | Archivo | Qué cambiar |
-| --- | --- | --- |
-| Retrato | `contenido/fotos/` | archivo `sobre-mi` |
-| Título "Detrás de cada proyecto" | `contenido/sitio.js` | `sobreMi` → `titulo` |
-| Párrafos | `contenido/sitio.js` | `sobreMi` → `parrafos` (un texto por párrafo) |
-| Tabla (Rol principal, Formación, Ubicación, Idiomas) | `contenido/sitio.js` | `sobreMi` → `datos` (cada renglón tiene `dato` y `valor`) |
-
-### Trabajos (lista de la home)
-
-| Lo que ves | Archivo | Qué cambiar |
-| --- | --- | --- |
-| Orden de los proyectos | `contenido/proyectos.js` | el orden de los bloques (ver [Agregar, sacar u ordenar proyectos](#agregar-sacar-u-ordenar-proyectos)) |
-| Título de cada proyecto | `contenido/proyectos.js` | `titulo` |
-| Línea chica debajo del título | `contenido/proyectos.js` | `lineaEnLaLista` |
-| Imagen de la tarjeta | `contenido/proyectos/<proyecto>/` | archivo `tarjeta` |
-| Colores de la tarjeta si no hay imagen | `contenido/proyectos.js` | `colores` (`'negro'`, `'hueso'` o `'rojo'`) |
-
-### Contacto
-
-| Lo que ves | Archivo | Qué cambiar |
-| --- | --- | --- |
-| Email | `contenido/sitio.js` | `contacto` → `email` |
-| Instagram | `contenido/sitio.js` | `contacto` → `instagram` (sin @) |
-| WhatsApp que se lee | `contenido/sitio.js` | `contacto` → `whatsappVisible` |
-| WhatsApp al que lleva el botón | `contenido/sitio.js` | `contacto` → `whatsappNumero` (todo junto: 54 + 9 + área + número) |
-| Mensaje que aparece escrito al abrir WhatsApp | `contenido/sitio.js` | `contacto` → `whatsappMensaje` |
-
-### Página de cada proyecto
-
-Todos los textos están en `contenido/proyectos.js`, dentro del bloque de ese proyecto. Las fotos y videos, en su carpeta `contenido/proyectos/<proyecto>/`.
-
-| Lo que ves (de arriba hacia abajo) | Qué cambiar |
+| Dónde | Formato que conviene |
 | --- | --- |
-| Recuadro negro con el punto rojo | `etiqueta` |
-| Texto de arriba a la derecha | `categoria` y `anio` |
-| Título gigante | `tituloEnRenglones` |
-| Texto al lado del título | `bajada` |
-| Video grande | archivo `video-principal` (o `imagen-principal` si no hay video) |
-| Texto chico abajo a la derecha del video | `formatoDeCamara` (opcional) |
-| Los cuatro recuadros (Rol, Tareas…) | `ficha` (cada uno tiene `dato` y `valor`) |
-| Afiche | archivo `afiche` |
-| Frase grande de "Sobre el proyecto" | `frase` |
-| Párrafos de "Sobre el proyecto" | `texto` (un texto por párrafo) |
-| Cinta negra | `cinta` (opcional) |
-| "Lo que hice" | `queHice` → `intro` y `tareas` (opcional) |
-| Título del carrusel | `galeria` → `titulo` |
-| Piezas del carrusel | archivos `galeria-1`, `galeria-2`… y sus títulos en `galeria` → `piezas` |
-| Créditos | `creditos` (cada uno tiene `rol` y `nombre`) |
+| Fotos de la portada | Cuadradas, con la cara al centro |
+| Retrato de Sobre mí | Vertical (4:5), con la cara al centro |
+| Tarjeta de cada proyecto | Vertical (4:5). Si no hay, se usa el afiche |
+| Video principal del proyecto | Horizontal (16:9), de 10 a 15 segundos, en loop |
+| Imagen principal (si no hay video) | Horizontal (16:9) |
+| Afiche | Vertical (4:5) |
+| Carrusel | Vertical (4:5). Fotos o videos de 10 a 15 segundos |
+| Imagen para compartir | Horizontal. Se recorta sola a 1200 × 630 |
 
-**Cómo se arma el carrusel:** la primera pieza de `piezas` usa el archivo `galeria-1`, la segunda `galeria-2`, y así. Cada pieza puede ser una foto o un video: se detecta solo por el archivo. En `comoSeHizo` va el texto que aparece al pasar el cursor por una foto (en el celular, al tocarla). Si subís más archivos que piezas escritas (por ejemplo, `galeria-5`), se agregan solos al carrusel.
-
-### Lo que se ve al compartir el link (WhatsApp, Instagram, LinkedIn)
-
-La imagen es `public/imagen-para-compartir.jpg` (1200 × 630). Para cambiarla, subí otra con el mismo nombre a la carpeta `public`.
+Mientras falte una foto o un video, en la web se ve un aviso del estilo **[Falta afiche.jpg]**.
 
 ---
 
-## Nombres y medidas de los archivos
+## Proyectos
 
-### Fotos generales · `contenido/fotos/`
-
-| Archivo | Dónde aparece | Formato recomendado |
-| --- | --- | --- |
-| `portada-1` | Foto fija de la portada | Cuadrada, 1200 × 1200, con la cara al centro |
-| `portada-2` | Foto que aparece y desaparece sobre `portada-1` | Igual que `portada-1` |
-| `sobre-mi` | Retrato de Sobre mí | Vertical 4:5 (1080 × 1350), con la cara al centro |
-
-### Fotos y videos de cada proyecto · `contenido/proyectos/<proyecto>/`
-
-| Archivo | Dónde aparece | Formato recomendado |
-| --- | --- | --- |
-| `tarjeta.jpg` | Tarjeta del proyecto en la lista de trabajos | Vertical 4:5 (1080 × 1350) |
-| `video-principal.mp4` | Video grande de arriba, en loop y sin sonido | Horizontal 16:9 (1920 × 1080), 10 a 15 s, menos de 6 MB |
-| `imagen-principal.jpg` | En lugar del video principal, si no hay video | Horizontal 16:9 (1920 × 1080) |
-| `afiche.jpg` | Afiche, al lado de "Sobre el proyecto" | Vertical 4:5 (1080 × 1350) |
-| `galeria-1`, `galeria-2`… | Piezas del carrusel, en ese orden | Vertical 4:5 (1080 × 1350). Fotos `.jpg`; videos `.mp4` de 10 a 15 s, menos de 4 MB |
-
-- **Fotos:** sirven `.jpg`, `.jpeg`, `.png` y `.webp`.
-- **Videos:** `.mp4` (exportado en H.264, el formato más común) o `.webm`. Los videos se ven sin sonido, así que no hace falta audio.
-- **Si falta la tarjeta**, se usa el afiche. Si falta el video principal, mientras tanto se ve tu foto de portada atenuada.
-- **Recortes:** el video principal se ve vertical en el celular y muy apaisado en la computadora, y la portada cambia de proporción según la pantalla. Dejá lo importante en el centro.
-
----
-
-## Agregar, sacar u ordenar proyectos
-
-Todo se hace en `contenido/proyectos.js`. Cada proyecto es un bloque que empieza con `{` y termina con `},` y tiene arriba un título del estilo `// ============ EL CLUB DEBEDE ============`.
-
-**Agregar un proyecto**
-
-1. Copiá un bloque entero, desde el `{` hasta su `},`, y pegalo donde quieras que aparezca.
-2. Cambiale los textos. En `carpeta` poné un nombre corto **sin espacios, tildes ni mayúsculas**, con guiones (por ejemplo `'nuevo-videoclip'`). Va a ser el final de la dirección web: `/proyectos/nuevo-videoclip`.
-3. Creá la carpeta de fotos: en `contenido/proyectos/`, tocá **Add file → Upload files** y arrastrá **una carpeta** de tu compu llamada igual que `carpeta` (`nuevo-videoclip`), con las fotos adentro.
-
-**Sacar un proyecto:** borrá su bloque entero, desde el `{` hasta su `},`. Si querés, borrá también su carpeta de fotos.
-
-**Cambiar el orden:** cortá un bloque entero y pegalo en otro lugar. "Proyecto 2 de 5" y "Siguiente proyecto" se actualizan solos.
-
-**Secciones opcionales:** si un proyecto no necesita la cinta negra (`cinta`), "Lo que hice" (`queHice`) o el texto del video (`formatoDeCamara`), borrá esa parte y la sección desaparece.
+- **Ordenar:** con las flechas **↑ ↓** de la lista. El orden de la lista es el orden de la web.
+- **Editar:** tocá el proyecto o **Editar**. Para volver, **← Todos los proyectos**.
+- **Agregar:** **+ Agregar proyecto** y escribí el nombre. Con el nombre se arma la dirección de la página (por ejemplo `/proyectos/nuevo-videoclip`), que después no se puede cambiar.
+- **Borrar:** la **✕** de la lista. Al publicar se borran también sus fotos y videos.
+- **Partes que se pueden dejar vacías:** la cinta negra, «Lo que hice» y el texto chico sobre el video. Si las dejás vacías, no aparecen.
+- **El carrusel:** cada pieza es una foto o un video, en el orden de la lista (se ordenan con las flechas). En las fotos, «Cómo se hizo» es el texto que aparece al pasar el cursor (en el celular, al tocarla).
 
 ---
 
 ## Si algo sale mal
 
-- Después de cada cambio, en la página principal del repositorio aparece al lado del último cambio un **punto amarillo** (publicando), una **tilde verde** (publicado) o una **cruz roja** (no se pudo publicar).
-- **Con la cruz roja la web sigue funcionando**, con la versión anterior. Casi siempre es una comilla o una coma que se borró: volvé a abrir el archivo, revisá alrededor de lo que cambiaste y guardá de nuevo.
-- Para volver atrás: abrí el archivo, tocá **History**, buscá cómo estaba antes y copiá ese texto.
-- Si no lo encontrás, pedile ayuda a Pablo (PF Software) y pasale el link del cambio.
+| Lo que dice el editor | Qué hacer |
+| --- | --- |
+| **La clave no es correcta** | Revisá mayúsculas y espacios y probá de nuevo |
+| **Hubo demasiados intentos…** | Después de 5 claves equivocadas, el editor espera 15 minutos. Es una protección: esperá y probá de nuevo |
+| **El contenido cambió en GitHub…** | Alguien cambió algo mientras editabas, o todavía se estaba publicando un cambio anterior. Esperá un minuto, recargá la página y volvé a hacer tus cambios |
+| **Este video pesa… y el máximo es 4 MB** | Exportalo más corto o en menor calidad (ver «Fotos y videos») |
+| **Antes de publicar, corregí esto** | La lista dice qué falta, por ejemplo un título vacío |
+| **Está tardando más de lo normal** | Si en unos minutos no se ve el cambio, avisale a Pablo |
+
+**Para volver a una versión anterior** que ya estaba publicada, pedíselo a Pablo: cada publicación queda guardada en GitHub con fecha y lista de cambios, así que nada se pierde.
 
 ---
 
@@ -204,9 +95,27 @@ Todo lo que está entre [corchetes] en la web:
 - **Gonna Go:** qué es, qué hacías y la línea de presentación.
 - **Televisión Barata:** año, qué hacías en cada emisión y el equipo.
 - **Shows y festivales:** fechas y otros festivales además de Lollapalooza Argentina.
-- **Video principal:** confirmar o borrar el texto "4K · 25 FPS" (`formatoDeCamara`).
+- **Video principal:** confirmar o borrar el texto «4K · 25 FPS» de El Club Debede.
 - **Todos los proyectos:** tarjeta, afiche, video principal y fotos del carrusel.
 
 ---
 
-*Para quien programe la web: la parte técnica está en `README.md`.*
+## Para casos especiales: cambiar los archivos en GitHub
+
+El editor alcanza para todo. Esto es por si alguna vez hace falta tocar los archivos a mano, por ejemplo para subir un video de más de 4 MB.
+
+- **Los textos** están en `contenido/sitio.json` (portada, sobre mí y contacto) y en `contenido/proyectos.json` (proyectos). Si los editás en GitHub (el lápiz → **Commit changes**), cambiá solo lo que está entre comillas y no borres comas, comillas ni los signos `[ ] { }`.
+- **Las fotos y videos** se encuentran por el nombre del archivo, en minúsculas:
+
+| Carpeta | Nombres |
+| --- | --- |
+| `contenido/fotos/` | `portada-1` (foto fija), `portada-2` (la que aparece y desaparece), `sobre-mi` |
+| `contenido/proyectos/<proyecto>/` | `tarjeta`, `video-principal`, `imagen-principal`, `afiche`, `galeria-1`, `galeria-2`… |
+| `public/` | `imagen-para-compartir.jpg` |
+
+- **Para subir un archivo:** entrá a la carpeta en GitHub, **Add file → Upload files**, arrastralo con el nombre exacto (por ejemplo `video-principal.mp4`) y **Commit changes**. Si había uno con el mismo nombre y otra extensión, borrá el viejo (los tres puntos **…** → **Delete file**).
+- **Si un cambio rompe algo,** la web no se cae: GitHub marca una **cruz roja** al lado del cambio y la web sigue mostrando la versión anterior hasta que se corrija.
+
+---
+
+*Para quien programe la web: la parte técnica (y cómo se configura el editor) está en `README.md`.*

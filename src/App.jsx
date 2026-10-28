@@ -1,8 +1,12 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 import { AnimatePresence, MotionConfig } from 'framer-motion'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Project from './pages/Project'
+
+// El editor se descarga solo al entrar a /editar: no suma peso a la web
+const Editor = lazy(() => import('./pages/Editor'))
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -13,6 +17,14 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/proyectos/:slug" element={<Project />} />
+        <Route
+          path="/editar"
+          element={
+            <Suspense fallback={<p className="eyebrow p-6">Abriendo el editor…</p>}>
+              <Editor />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

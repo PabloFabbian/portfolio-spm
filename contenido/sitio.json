@@ -1,0 +1,50 @@
+{
+  "nombre": "Santiago Pérez Mejías",
+  "nombreEnRenglones": [
+    "Santiago",
+    "Pérez",
+    "Mejías"
+  ],
+  "profesion": "Productor audiovisual",
+  "frase": "Lo más personal es lo más creativo.",
+  "cinta": [
+    "Producción integral",
+    "Rodajes",
+    "Eventos en vivo",
+    "Apoyo a artistas",
+    "Escenografía"
+  ],
+  "anio": 2026,
+  "sobreMi": {
+    "titulo": "Detrás de cada proyecto",
+    "parrafos": [
+      "Estudiante vinculado al ámbito audiovisual, con experiencia en producción de eventos musicales y participación en rodajes y proyectos académicos. Busca seguir desarrollándose en producción audiovisual, especialmente en cine y televisión.",
+      "Abierto a trabajar con productoras audiovisuales de cine y televisión, productoras de videoclips y shows musicales, en equipo y en distintos roles de producción."
+    ],
+    "datos": [
+      {
+        "dato": "Rol principal",
+        "valor": "Producción integral y asistencia en rodajes y eventos: apoyo a artistas, montaje de escenografía, tendido de cables y asistencia durante shows, entre otras tareas. Dirección."
+      },
+      {
+        "dato": "Formación",
+        "valor": "Tecnicatura en Producción Audiovisual, ETER (2024 – actualidad) · Ingeniería en Sonido, Orión (finalizado)"
+      },
+      {
+        "dato": "Ubicación",
+        "valor": "Buenos Aires, Argentina"
+      },
+      {
+        "dato": "Idiomas",
+        "valor": "Inglés B2 (First Certificate in English, Cambridge)"
+      }
+    ]
+  },
+  "contacto": {
+    "email": "santiago.perez.mejias@gmail.com",
+    "instagram": "santii_pe",
+    "whatsappVisible": "+54 9 11 6176-1500",
+    "whatsappNumero": "5491161761500",
+    "whatsappMensaje": "Hola Santiago, vi tu portfolio y quería hablar con vos."
+  }
+}

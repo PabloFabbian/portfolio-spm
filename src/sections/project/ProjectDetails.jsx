@@ -3,6 +3,8 @@ import { Reveal } from '../../components/Reveal'
 
 /** Ficha técnica: 2 columnas en celular, 4 en escritorio */
 export function ProjectFacts({ facts }) {
+  if (!facts?.length) return null
+
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-12 lg:px-10 lg:pb-20">
       <Reveal as="dl" className="grid grid-cols-2 gap-[3px] border-[3px] border-ink bg-ink lg:grid-cols-4">
