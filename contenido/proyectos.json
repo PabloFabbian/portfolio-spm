@@ -196,6 +196,102 @@
     ]
   },
   {
+    "carpeta": "shows-y-festivales",
+    "titulo": "Shows y festivales",
+    "tituloEnRenglones": [
+      "Shows y",
+      "festivales"
+    ],
+    "etiqueta": "Eventos en vivo",
+    "categoria": "Eventos en vivo",
+    "anio": "[Fechas]",
+    "lineaEnLaLista": "Eventos en vivo · Asistencia de producción",
+    "bajada": "Producción en vivo: estar al pie del cañón para que el show salga.",
+    "colores": {
+      "fondo": "rojo",
+      "puntos": "negro"
+    },
+    "ficha": [
+      {
+        "dato": "Rol",
+        "valor": "Asistencia y apoyo general de producción"
+      },
+      {
+        "dato": "Formato",
+        "valor": "Eventos musicales en vivo y festivales"
+      },
+      {
+        "dato": "Festivales",
+        "valor": "Lollapalooza Argentina · [otros]"
+      },
+      {
+        "dato": "Años",
+        "valor": "[Completar]"
+      }
+    ],
+    "frase": "Al pie del cañón para todo.",
+    "texto": [
+      "Trabajé en shows y festivales, entre ellos Lollapalooza Argentina.",
+      "Fui el enlace con los artistas: si necesitaban algo, se lo alcanzaba. Armé escenografía con el área de arte y, durante el show, tiré cables, afiné guitarras y estuve atrás de la consola de audio para que no pasara nada."
+    ],
+    "cinta": [
+      "Artistas",
+      "Escenografía",
+      "Cables",
+      "Consola",
+      "En vivo"
+    ],
+    "queHice": {
+      "intro": "De la escenografía al final del show.",
+      "tareas": [
+        {
+          "momento": "Antes",
+          "titulo": "Escenografía",
+          "texto": "Armar la escenografía junto al área de arte."
+        },
+        {
+          "momento": "Durante",
+          "titulo": "Artistas",
+          "texto": "Ser el enlace con los artistas y resolver lo que necesiten."
+        },
+        {
+          "momento": "Durante",
+          "titulo": "Técnica",
+          "texto": "Tirar cables, afinar guitarras y asistir atrás de la consola de audio."
+        }
+      ]
+    },
+    "galeria": {
+      "titulo": "Clips y fotos",
+      "piezas": [
+        {
+          "tipo": "foto",
+          "titulo": "Foto 1",
+          "comoSeHizo": "[Cómo se hizo esta toma]"
+        },
+        {
+          "tipo": "video",
+          "titulo": "Video 1"
+        },
+        {
+          "tipo": "foto",
+          "titulo": "Foto 2",
+          "comoSeHizo": "[Cómo se hizo esta toma]"
+        },
+        {
+          "tipo": "video",
+          "titulo": "Video 2"
+        }
+      ]
+    },
+    "creditos": [
+      {
+        "rol": "Asistencia de producción",
+        "nombre": "Santiago Pérez Mejías"
+      }
+    ]
+  },
+  {
     "carpeta": "gonna-go",
     "titulo": "Gonna Go",
     "tituloEnRenglones": [
@@ -334,102 +430,6 @@
       {
         "rol": "Equipo",
         "nombre": "[Nombres]"
-      }
-    ]
-  },
-  {
-    "carpeta": "shows-y-festivales",
-    "titulo": "Shows y festivales",
-    "tituloEnRenglones": [
-      "Shows y",
-      "festivales"
-    ],
-    "etiqueta": "Eventos en vivo",
-    "categoria": "Eventos en vivo",
-    "anio": "[Fechas]",
-    "lineaEnLaLista": "Eventos en vivo · Asistencia de producción",
-    "bajada": "Producción en vivo: estar al pie del cañón para que el show salga.",
-    "colores": {
-      "fondo": "rojo",
-      "puntos": "negro"
-    },
-    "ficha": [
-      {
-        "dato": "Rol",
-        "valor": "Asistencia y apoyo general de producción"
-      },
-      {
-        "dato": "Formato",
-        "valor": "Eventos musicales en vivo y festivales"
-      },
-      {
-        "dato": "Festivales",
-        "valor": "Lollapalooza Argentina · [otros]"
-      },
-      {
-        "dato": "Años",
-        "valor": "[Completar]"
-      }
-    ],
-    "frase": "Al pie del cañón para todo.",
-    "texto": [
-      "Trabajé en shows y festivales, entre ellos Lollapalooza Argentina.",
-      "Fui el enlace con los artistas: si necesitaban algo, se lo alcanzaba. Armé escenografía con el área de arte y, durante el show, tiré cables, afiné guitarras y estuve atrás de la consola de audio para que no pasara nada."
-    ],
-    "cinta": [
-      "Artistas",
-      "Escenografía",
-      "Cables",
-      "Consola",
-      "En vivo"
-    ],
-    "queHice": {
-      "intro": "De la escenografía al final del show.",
-      "tareas": [
-        {
-          "momento": "Antes",
-          "titulo": "Escenografía",
-          "texto": "Armar la escenografía junto al área de arte."
-        },
-        {
-          "momento": "Durante",
-          "titulo": "Artistas",
-          "texto": "Ser el enlace con los artistas y resolver lo que necesiten."
-        },
-        {
-          "momento": "Durante",
-          "titulo": "Técnica",
-          "texto": "Tirar cables, afinar guitarras y asistir atrás de la consola de audio."
-        }
-      ]
-    },
-    "galeria": {
-      "titulo": "Clips y fotos",
-      "piezas": [
-        {
-          "tipo": "foto",
-          "titulo": "Foto 1",
-          "comoSeHizo": "[Cómo se hizo esta toma]"
-        },
-        {
-          "tipo": "video",
-          "titulo": "Video 1"
-        },
-        {
-          "tipo": "foto",
-          "titulo": "Foto 2",
-          "comoSeHizo": "[Cómo se hizo esta toma]"
-        },
-        {
-          "tipo": "video",
-          "titulo": "Video 2"
-        }
-      ]
-    },
-    "creditos": [
-      {
-        "rol": "Asistencia de producción",
-        "nombre": "Santiago Pérez Mejías"
       }
     ]
   }
