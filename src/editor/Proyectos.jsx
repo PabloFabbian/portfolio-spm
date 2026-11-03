@@ -1,19 +1,36 @@
 // Pestaña Proyectos: la lista (ordenar, agregar, borrar) y el formulario de cada proyecto
 import { useId, useState } from 'react'
 import { COLORES, MAX_GALERIA, MAX_PROYECTOS } from '../lib/contenido.js'
+import { pesoLegible } from './archivos'
 import { CampoArchivo } from './CampoArchivo'
 import { Boton, ListaDeFilas, ListaDeTextos, Opciones, Orden, Seccion, Texto } from './campos'
+import { MARCOS, useVideos, videosEnLaNube } from './contexto'
 import { nuevoId } from './estado'
 import { mover } from './listas'
+
+/** Qué videos se pueden subir (depende de si Cloudinary está configurado) */
+function useAyudaDeVideos() {
+  const videos = useVideos()
+  return videosEnLaNube(videos)
+    ? `MP4 o MOV de hasta ${pesoLegible(videos.pesoMaximo)}. La web muestra 15 segundos en loop y sin sonido: en «Encuadre e inicio» elegís desde dónde.`
+    : 'MP4 de 10 a 15 segundos y hasta 4 MB.'
+}
 
 const MUESTRAS = { negro: '#0b0b0b', hueso: '#ece6da', rojo: '#c4301f' }
 const OPCIONES_DE_COLOR = COLORES.map((color) => ({ valor: color, etiqueta: color, muestra: MUESTRAS[color] }))
 
 function Miniatura({ proyecto }) {
-  const archivo = proyecto._medios.tarjeta ?? proyecto._medios.afiche ?? proyecto._medios['imagen-principal']
+  const archivo = [proyecto._medios.tarjeta, proyecto._medios.afiche, proyecto._medios['imagen-principal']].find((a) => a?.kind === 'image')
   return (
     <div className="relative aspect-[4/5] w-14 shrink-0 overflow-hidden border-[3px] border-ink lg:w-16" style={{ background: MUESTRAS[proyecto.colores.fondo] }}>
-      {archivo?.kind === 'image' && <img src={archivo.url} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+      {archivo && (
+        <img
+          src={archivo.url}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          style={archivo.encuadre ? { objectPosition: archivo.encuadre } : undefined}
+        />
+      )}
     </div>
   )
 }
@@ -122,12 +139,13 @@ export function ListaDeProyectos({ proyectos, onCambio, onAbrir, onAgregar }) {
 
 function Galeria({ galeria, onCambio }) {
   const piezas = galeria.piezas
+  const ayudaDeVideos = useAyudaDeVideos()
   const cambiarPieza = (i, cambio) => onCambio({ ...galeria, piezas: piezas.map((p, j) => (j === i ? { ...p, ...cambio } : p)) })
 
   return (
     <Seccion
       titulo="Carrusel"
-      ayuda="Fotos y videos verticales (4:5). Se ven de a 3 en la compu y de a 1 en el celular, en este orden. Videos MP4 de 10 a 15 segundos y hasta 4 MB."
+      ayuda={`Fotos y videos en recuadros verticales (4:5): si son horizontales, con «Encuadre» elegís qué parte se ve. Van de a 3 en la compu y de a 1 en el celular, en este orden. Videos: ${ayudaDeVideos}`}
     >
       <Texto etiqueta="Título del carrusel" valor={galeria.titulo} onCambio={(titulo) => onCambio({ ...galeria, titulo })} max={80} />
       <ol className="flex flex-col gap-3">
@@ -151,6 +169,8 @@ function Galeria({ galeria, onCambio }) {
                   archivo={pieza._archivo}
                   acepta="ambos"
                   ancho="w-24 lg:w-28"
+                  marcos={MARCOS.vertical}
+                  conInicio
                   onCambio={(archivo) =>
                     cambiarPieza(i, { _archivo: archivo, ...(archivo ? { tipo: archivo.kind === 'video' ? 'video' : 'foto' } : {}) })
                   }
@@ -197,6 +217,7 @@ function Galeria({ galeria, onCambio }) {
 }
 
 export function FormularioDeProyecto({ proyecto, onCambio, onVolver, onVistaPrevia }) {
+  const ayudaDeVideos = useAyudaDeVideos()
   const cambiar = (cambio) => onCambio({ ...proyecto, ...cambio })
   const cambiarMedio = (nombre, archivo) => onCambio({ ...proyecto, _medios: { ...proyecto._medios, [nombre]: archivo } })
 
@@ -225,6 +246,7 @@ export function FormularioDeProyecto({ proyecto, onCambio, onVolver, onVistaPrev
           ayuda="Foto vertical (4:5) que se ve en la lista de trabajos. Si no hay, se usa el afiche."
           archivo={proyecto._medios.tarjeta}
           onCambio={(archivo) => cambiarMedio('tarjeta', archivo)}
+          marcos={MARCOS.vertical}
         />
         <Opciones
           etiqueta="Color de fondo de la tarjeta (mientras no haya foto)"
@@ -271,15 +293,20 @@ export function FormularioDeProyecto({ proyecto, onCambio, onVolver, onVistaPrev
         />
       </Seccion>
 
-      <Seccion titulo="Video principal" ayuda="El video grande, en loop y sin sonido. Se ve vertical en el celular y muy apaisado en la compu: dejá lo importante al centro.">
+      <Seccion
+        titulo="Video principal"
+        ayuda="El video grande, en loop y sin sonido. Se ve vertical en el celular y muy apaisado en la compu: con «Encuadre» elegís qué parte queda siempre a la vista."
+      >
         <CampoArchivo
           etiqueta="Video"
-          ayuda="MP4 horizontal (16:9), de 10 a 15 segundos y hasta 4 MB."
+          ayuda={`Horizontal (16:9). ${ayudaDeVideos}`}
           archivo={proyecto._medios['video-principal']}
           onCambio={(archivo) => cambiarMedio('video-principal', archivo)}
           acepta="video"
           proporcion="aspect-video"
           ancho="w-40 lg:w-52"
+          marcos={MARCOS.principal}
+          conInicio
         />
         <CampoArchivo
           etiqueta="Imagen (si no hay video)"
@@ -289,6 +316,7 @@ export function FormularioDeProyecto({ proyecto, onCambio, onVolver, onVistaPrev
           proporcion="aspect-video"
           ancho="w-40 lg:w-52"
           ladoMaximo={2400}
+          marcos={MARCOS.principal}
         />
         <Texto
           etiqueta="Texto chico sobre el video (opcional)"
@@ -321,6 +349,7 @@ export function FormularioDeProyecto({ proyecto, onCambio, onVolver, onVistaPrev
           ayuda="Foto vertical (4:5) al lado del texto."
           archivo={proyecto._medios.afiche}
           onCambio={(archivo) => cambiarMedio('afiche', archivo)}
+          marcos={MARCOS.vertical}
         />
         <Texto etiqueta="Frase grande" valor={proyecto.frase} onCambio={(frase) => cambiar({ frase })} multilinea max={300} />
         <ListaDeTextos

@@ -105,6 +105,7 @@ function HeroPhoto() {
             alt={frente.alt}
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover"
+            style={frente.position ? { objectPosition: frente.position } : undefined}
           />
         )}
         {perfil && (
@@ -115,6 +116,7 @@ function HeroPhoto() {
             alt=""
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover"
+            style={perfil.position ? { objectPosition: perfil.position } : undefined}
             initial={{ opacity: frente ? 0 : 1 }}
             animate={reduce || !frente ? undefined : { opacity: [0, 0, 1, 1, 0] }}
             transition={{ duration: 10, times: [0, 0.42, 0.5, 0.92, 1], ease: 'easeInOut', repeat: Infinity }}

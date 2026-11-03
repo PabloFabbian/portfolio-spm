@@ -3,6 +3,7 @@ import { animate, motion, useInView, useMotionValue, useReducedMotion } from 'fr
 import { COLOR, EASE } from '../lib/tokens'
 import { Halftone } from './Halftone'
 import { ArrowLeft, ArrowRight, Pause, Play } from './icons'
+import { Video } from './Video'
 
 const AUTOPLAY_MS = 4000
 const COPIES = [0, 1, 2] // la lista se dibuja 3 veces para que el bucle no tenga cortes
@@ -257,20 +258,17 @@ function Corner({ className }) {
 }
 
 function ClipCard({ item }) {
-  const reduce = useReducedMotion()
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-ink text-paper">
       {item.src ? (
         <>
-          <video
+          {/* Se reproduce solo la copia que está a la vista (el carrusel dibuja cada pieza 3 veces) */}
+          <Video
             className="absolute inset-0 h-full w-full object-cover"
             src={item.src}
-            poster={item.poster ?? undefined}
-            muted
-            loop
-            playsInline
-            autoPlay={!reduce}
-            preload="metadata"
+            poster={item.poster}
+            position={item.position}
+            start={item.start}
           />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
         </>
@@ -322,6 +320,7 @@ function PhotoCard({ item }) {
           loading="lazy"
           draggable={false}
           className="absolute inset-0 h-full w-full object-cover"
+          style={item.position ? { objectPosition: item.position } : undefined}
         />
       ) : (
         <>

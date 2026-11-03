@@ -32,3 +32,45 @@ export function leerConfig() {
 
   return { token, clave, repo, rama, api, problemas, listo: problemas.length === 0 }
 }
+
+/*
+ * Videos en Cloudinary (opcional). Con estas tres variables, los videos se suben directo
+ * desde el navegador a la cuenta de Cloudinary y pueden pesar hasta 100 MB; sin ellas, se
+ * guardan en GitHub y pueden pesar hasta 4 MB.
+ *
+ *   CLOUDINARY_CLOUD_NAME  el "Cloud name" de la cuenta
+ *   CLOUDINARY_API_KEY     la "API Key"
+ *   CLOUDINARY_API_SECRET  el "API Secret" (secreto: solo acá, nunca en el código)
+ *
+ * También se acepta CLOUDINARY_URL (cloudinary://API_KEY:API_SECRET@CLOUD_NAME), y si la
+ * cuenta pide firmas SHA-256, CLOUDINARY_SIGNATURE_ALGORITHM=sha256.
+ */
+export function leerCloudinary() {
+  const env = process.env
+  const leer = (nombre) => String(env[nombre] ?? '').trim()
+  const desdeUrl = /cloudinary:\/\/([^:@\s]+):([^@\s]+)@([^/?#\s]+)/.exec(leer('CLOUDINARY_URL')) ?? []
+  const cuenta = leer('CLOUDINARY_CLOUD_NAME') || desdeUrl[3] || ''
+  const apiKey = leer('CLOUDINARY_API_KEY') || desdeUrl[1] || ''
+  const secreto = leer('CLOUDINARY_API_SECRET') || desdeUrl[2] || ''
+  const algoritmo = /^sha-?256$/i.test(leer('CLOUDINARY_SIGNATURE_ALGORITHM')) ? 'sha256' : 'sha1'
+  const megas = Number(leer('CLOUDINARY_MAX_MB'))
+  const pesoMaximo = Math.round((megas > 0 ? Math.min(megas, 2000) : 100) * 1024 * 1024)
+  const api = leer('CLOUDINARY_API_URL').replace(/\/+$/, '') || 'https://api.cloudinary.com'
+
+  const avisos = []
+  if (!cuenta && !apiKey && !secreto) return { activo: false, avisos }
+
+  const quePasa = 'Hasta que se corrija, los videos se guardan en GitHub y pueden pesar hasta 4 MB.'
+  if (!cuenta) avisos.push(`Falta CLOUDINARY_CLOUD_NAME, el «Cloud name» de Cloudinary. ${quePasa}`)
+  else if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(cuenta)) {
+    avisos.push(`CLOUDINARY_CLOUD_NAME no parece un «Cloud name» de Cloudinary (son letras y números, sin espacios). ${quePasa}`)
+  }
+  if (!apiKey) avisos.push(`Falta CLOUDINARY_API_KEY, la «API Key» de Cloudinary. ${quePasa}`)
+  else if (!/^\d{5,30}$/.test(apiKey)) avisos.push(`CLOUDINARY_API_KEY no parece una «API Key» de Cloudinary (son solo números). ${quePasa}`)
+  if (!secreto) avisos.push(`Falta CLOUDINARY_API_SECRET, el «API Secret» de Cloudinary. ${quePasa}`)
+  else if (!/^[\w-]{10,100}$/.test(secreto)) {
+    avisos.push(`CLOUDINARY_API_SECRET no parece un «API Secret» de Cloudinary (¿quedó copiado con espacios o con < >?). ${quePasa}`)
+  }
+
+  return { activo: avisos.length === 0, cuenta, apiKey, secreto, algoritmo, pesoMaximo, api, avisos }
+}

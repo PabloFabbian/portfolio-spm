@@ -23,7 +23,7 @@ export function ProjectFacts({ facts }) {
 export function ProjectAbout({ project }) {
   const long = Math.max(...project.titleLines.map((line) => line.length)) > 8
   const posterTitle = long ? 'text-[44px] lg:text-[52px]' : 'text-[56px] lg:text-[72px]'
-  const { poster, posterLabel = '[Afiche]' } = project.media
+  const { poster, posterPosition, posterLabel = '[Afiche]' } = project.media
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-14 lg:px-10 lg:pb-24">
@@ -32,7 +32,13 @@ export function ProjectAbout({ project }) {
           <div aria-hidden="true" className="absolute top-3 right-0 bottom-0 left-3 bg-ink lg:top-5 lg:left-5" />
           <div className="relative aspect-[4/5] overflow-hidden border-[3px] border-ink bg-rec">
             {poster ? (
-              <img src={poster} alt={`Afiche de ${project.title}`} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+              <img
+                src={poster}
+                alt={`Afiche de ${project.title}`}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+                style={posterPosition ? { objectPosition: posterPosition } : undefined}
+              />
             ) : (
               <>
                 <Halftone dot="ink" size={12} />

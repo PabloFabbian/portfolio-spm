@@ -3,14 +3,14 @@
  * - La clave se compara en tiempo constante y cada error demora la respuesta.
  * - Cinco errores desde la misma conexión la bloquean 15 minutos, y 30 errores en total
  *   (desde cualquier lado) pausan el editor 15 minutos.
- * - Con la clave correcta se entrega un pase firmado que vale 15 minutos: alcanza para
- *   subir los archivos y publicar sin mandar la clave en cada pedido.
+ * - Con la clave correcta se entrega un pase firmado que vale una hora: alcanza para
+ *   subir los archivos (también videos pesados) y publicar sin mandar la clave en cada pedido.
  * La firma depende de la clave y del permiso de GitHub: si se cambia cualquiera de los dos,
  * los pases anteriores dejan de valer.
  */
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 
-const DURACION_DEL_PASE = 15 * 60 * 1000
+const DURACION_DEL_PASE = 60 * 60 * 1000
 const VENTANA = 15 * 60 * 1000
 const MAX_ERRORES_POR_CONEXION = 5
 const MAX_ERRORES_EN_TOTAL = 30

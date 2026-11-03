@@ -39,24 +39,38 @@ Algunas cosas útiles:
 
 ## Fotos y videos
 
-En cada lugar donde va una foto o un video hay tres botones: **Elegir** (o **Cambiar**) y **Quitar**.
+En cada lugar donde va una foto o un video están los botones **Elegir** (o **Cambiar**), **Encuadre** y **Quitar**.
 
 - **Las fotos se achican solas** antes de subirse: podés elegir la foto tal cual sale del celu o de la cámara. Si es HEIC (la de los iPhone) y no se abre, exportala como JPG.
-- **Los videos** van en **MP4** (exportados en H.264, el formato más común) o WEBM, y pueden pesar **hasta 4 MB**. Para que entren: entre 10 y 15 segundos, en 720p y sin sonido (la web los muestra sin sonido). Se exportan así con CapCut, HandBrake o el programa de edición que uses.
-- **Dejá lo importante en el centro.** Según la pantalla, la web recorta un poco los bordes.
+- **Los videos se guardan en tu cuenta de Cloudinary** y pueden pesar **hasta 100 MB**: sirve el MP4 o el MOV tal cual lo exportás, sin achicarlo. La web muestra **15 segundos en loop y sin sonido**, y vos elegís desde qué segundo (ver **Encuadre e inicio**, abajo).
+- **Los videos se suben al tocar Publicar.** Uno de 100 MB tarda un par de minutos con buena conexión: el editor muestra el porcentaje. Si se corta internet, tocá Publicar de nuevo: los que ya subieron no se vuelven a subir.
+- **Después de publicar**, Cloudinary prepara el clip de cada video nuevo. Puede tardar unos minutos más que el resto de los cambios en verse.
+
+### Encuadre e inicio
+
+La web recorta las fotos y los videos para llenar cada recuadro, y el recuadro cambia según la pantalla: el video principal se ve vertical en el celular y muy apaisado en la compu, y el carrusel es vertical aunque el video sea horizontal.
+
+1. Tocá **Encuadre** (en los videos, **Encuadre e inicio**).
+2. **Tocá la foto o el video en lo más importante** (una cara, el escenario): esa parte queda siempre a la vista. Abajo ves cómo queda en cada pantalla. **Centrar** lo vuelve al medio.
+3. **En los videos, elegí desde dónde arranca** con la barra **Empieza en**, y mirá el resultado con **Ver los 15 segundos**.
+4. Tocá **Listo**. El cambio se ve en la **Vista previa** y se guarda al publicar, como todo lo demás.
+
+En un video que ya está publicado, el inicio se cambia escribiendo el segundo: el clip nuevo se prepara al publicar y aparece en la web uno o dos minutos después.
 
 | Dónde | Formato que conviene |
 | --- | --- |
-| Fotos de la portada | Cuadradas, con la cara al centro |
-| Retrato de Sobre mí | Vertical (4:5), con la cara al centro |
+| Fotos de la portada | Cuadradas o verticales |
+| Retrato de Sobre mí | Vertical (4:5) |
 | Tarjeta de cada proyecto | Vertical (4:5). Si no hay, se usa el afiche |
-| Video principal del proyecto | Horizontal (16:9), de 10 a 15 segundos, en loop |
+| Video principal del proyecto | Horizontal (16:9) |
 | Imagen principal (si no hay video) | Horizontal (16:9) |
 | Afiche | Vertical (4:5) |
-| Carrusel | Vertical (4:5). Fotos o videos de 10 a 15 segundos |
+| Carrusel | Vertical (4:5). Si la foto o el video es horizontal, elegí el encuadre |
 | Imagen para compartir | Horizontal. Se recorta sola a 1200 × 630 |
 
 Mientras falte una foto o un video, en la web se ve un aviso del estilo **[Falta afiche.jpg]**.
+
+> **Tu cuenta de Cloudinary** es gratuita y no pide tarjeta: no cobra nada. El plan gratis alcanza de sobra para un portfolio; si algún mes se pasara del límite, Cloudinary avisa por mail. Los videos que reemplazás quedan guardados ahí (por si querés volver atrás), en la carpeta **portfolio-web**.
 
 ---
 
@@ -65,7 +79,7 @@ Mientras falte una foto o un video, en la web se ve un aviso del estilo **[Falta
 - **Ordenar:** con las flechas **↑ ↓** de la lista. El orden de la lista es el orden de la web.
 - **Editar:** tocá el proyecto o **Editar**. Para volver, **← Todos los proyectos**.
 - **Agregar:** **+ Agregar proyecto** y escribí el nombre. Con el nombre se arma la dirección de la página (por ejemplo `/proyectos/nuevo-videoclip`), que después no se puede cambiar.
-- **Borrar:** la **✕** de la lista. Al publicar se borran también sus fotos y videos.
+- **Borrar:** la **✕** de la lista. Al publicar se borran también sus fotos (los videos quedan guardados en Cloudinary).
 - **Partes que se pueden dejar vacías:** la cinta negra, «Lo que hice» y el texto chico sobre el video. Si las dejás vacías, no aparecen.
 - **El carrusel:** cada pieza es una foto o un video, en el orden de la lista (se ordenan con las flechas). En las fotos, «Cómo se hizo» es el texto que aparece al pasar el cursor (en el celular, al tocarla).
 
@@ -78,7 +92,10 @@ Mientras falte una foto o un video, en la web se ve un aviso del estilo **[Falta
 | **La clave no es correcta** | Revisá mayúsculas y espacios y probá de nuevo |
 | **Hubo demasiados intentos…** | Después de 5 claves equivocadas, el editor espera 15 minutos. Es una protección: esperá y probá de nuevo |
 | **El contenido cambió en GitHub…** | Alguien cambió algo mientras editabas, o todavía se estaba publicando un cambio anterior. Esperá un minuto, recargá la página y volvé a hacer tus cambios |
-| **Este video pesa… y el máximo es 4 MB** | Exportalo más corto o en menor calidad (ver «Fotos y videos») |
+| **Este video pesa… y el máximo es 100 MB** | Exportalo más corto o en menor calidad (en 1080p alcanza) |
+| **Se cortó la conexión mientras se subía el video** | Revisá internet y tocá Publicar de nuevo: los videos que ya se subieron no se vuelven a subir |
+| **Cloudinary no aceptó la firma** o **no reconoce la cuenta** | Avisale a Pablo: hay que revisar los datos de Cloudinary en Vercel |
+| **Un video nuevo no aparece en la web** | Cloudinary lo está preparando: esperá unos minutos y recargá la página |
 | **Antes de publicar, corregí esto** | La lista dice qué falta, por ejemplo un título vacío |
 | **Está tardando más de lo normal** | Si en unos minutos no se ve el cambio, avisale a Pablo |
 
@@ -102,7 +119,7 @@ Todo lo que está entre [corchetes] en la web:
 
 ## Para casos especiales: cambiar los archivos en GitHub
 
-El editor alcanza para todo. Esto es por si alguna vez hace falta tocar los archivos a mano, por ejemplo para subir un video de más de 4 MB.
+El editor alcanza para todo. Esto es por si alguna vez hace falta tocar los archivos a mano.
 
 - **Los textos** están en `contenido/sitio.json` (portada, sobre mí y contacto) y en `contenido/proyectos.json` (proyectos). Si los editás en GitHub (el lápiz → **Commit changes**), cambiá solo lo que está entre comillas y no borres comas, comillas ni los signos `[ ] { }`.
 - **Las fotos y videos** se encuentran por el nombre del archivo, en minúsculas:
@@ -113,7 +130,8 @@ El editor alcanza para todo. Esto es por si alguna vez hace falta tocar los arch
 | `contenido/proyectos/<proyecto>/` | `tarjeta`, `video-principal`, `imagen-principal`, `afiche`, `galeria-1`, `galeria-2`… |
 | `public/` | `imagen-para-compartir.jpg` |
 
-- **Para subir un archivo:** entrá a la carpeta en GitHub, **Add file → Upload files**, arrastralo con el nombre exacto (por ejemplo `video-principal.mp4`) y **Commit changes**. Si había uno con el mismo nombre y otra extensión, borrá el viejo (los tres puntos **…** → **Delete file**).
+- **Para subir un archivo:** entrá a la carpeta en GitHub, **Add file → Upload files**, arrastralo con el nombre exacto (por ejemplo `afiche.jpg`) y **Commit changes**. Si había uno con el mismo nombre y otra extensión, borrá el viejo (los tres puntos **…** → **Delete file**). Así también se pueden subir videos de hasta 4 MB.
+- **Los videos subidos desde el editor no están en GitHub:** están en Cloudinary y anotados en `contenido/proyectos.json` (con su encuadre y su inicio). Si un lugar tiene un video de Cloudinary, la web usa ese y no el archivo de la carpeta.
 - **Si un cambio rompe algo,** la web no se cae: GitHub marca una **cruz roja** al lado del cambio y la web sigue mostrando la versión anterior hasta que se corrija.
 
 ---

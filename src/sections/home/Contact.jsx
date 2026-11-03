@@ -2,7 +2,8 @@ import { ArrowRight } from '../../components/icons'
 import { Reveal } from '../../components/Reveal'
 import { links, site } from '../../data/site'
 
-const VALUE_SIZE = 'text-[length:clamp(28px,8vw,40px)] lg:text-[length:clamp(28px,4.4vw,64px)]'
+// Los datos van como subtítulo del título grande (la mitad de lo que eran)
+const VALUE_SIZE = 'text-[length:clamp(20px,5.6vw,24px)] lg:text-[length:clamp(24px,2.4vw,34px)]'
 
 export function Contact() {
   const { contact } = site
@@ -11,7 +12,7 @@ export function Contact() {
       label: 'Email',
       value: contact.email,
       href: links.email,
-      size: 'normal-case text-[length:clamp(20px,5.6vw,30px)] [overflow-wrap:anywhere] lg:text-[length:clamp(28px,4.4vw,64px)]',
+      size: 'normal-case text-[length:clamp(16px,4.6vw,22px)] [overflow-wrap:anywhere] lg:text-[length:clamp(24px,2.4vw,34px)]',
     },
     {
       label: 'Instagram',
@@ -47,11 +48,11 @@ export function Contact() {
                 href={row.href}
                 target={row.external ? '_blank' : undefined}
                 rel={row.external ? 'noopener noreferrer' : undefined}
-                className="group flex min-h-11 flex-col gap-1.5 border-b-[3px] border-paper px-2 py-4 transition-colors duration-150 hover:bg-paper hover:text-ink lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-x-6 lg:gap-y-3 lg:px-3 lg:py-5"
+                className="group flex min-h-11 flex-col gap-1.5 border-b-[3px] border-paper px-2 py-3.5 transition-colors duration-150 hover:bg-paper hover:text-ink lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-x-6 lg:gap-y-3 lg:px-3 lg:py-4"
               >
                 <span className="eyebrow lg:basis-[140px] lg:text-[13px]">{row.label}</span>
                 <span className={`display leading-none lg:flex-[1_1_280px] ${row.size}`}>{row.value}</span>
-                <ArrowRight size={32} className="hidden transition-transform duration-200 group-hover:translate-x-1.5 lg:block" />
+                <ArrowRight size={24} className="hidden transition-transform duration-200 group-hover:translate-x-1.5 lg:block" />
               </a>
             </li>
           ))}

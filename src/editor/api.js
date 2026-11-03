@@ -56,6 +56,12 @@ export const subir = (pase, blob) =>
 
 export const publicar = (pase, cuerpo) => pedir('/api/publicar', json(cuerpo, pase))
 
+/** Firma para subir un video directo a Cloudinary: { subida, campos, cuenta, pesoMaximo } */
+export const firmarVideo = (pase, { uso, inicio }) => pedir('/api/firmar-video', json({ uso, inicio }, pase))
+
+/** Pide a Cloudinary que prepare el clip de un video ya subido (cuando cambió desde dónde arranca) */
+export const prepararVideo = (pase, { id, uso, inicio }) => pedir('/api/preparar-video', json({ id, uso, inicio }, pase))
+
 /**
  * Commit que está publicado ahora en la web (lo deja el build en /version.json).
  * Devuelve null si no se sabe (por ejemplo, en la compu con npm run dev).

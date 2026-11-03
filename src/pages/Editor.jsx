@@ -8,6 +8,7 @@ import { Page } from '../components/Page'
 import { useDocumentTitle } from '../hooks/usePageScroll'
 import { consultarEstado } from '../editor/api'
 import { Boton } from '../editor/campos'
+import { ContextoDeVideos, VIDEOS_EN_GITHUB } from '../editor/contexto'
 import {
   RUTAS_PUBLICADAS,
   baseInicial,
@@ -17,6 +18,7 @@ import {
   listarCambios,
   partesDe,
   proyectoNuevo,
+  reemplazarArchivo,
   rutasDespues,
 } from '../editor/estado'
 import { FormularioDeProyecto, ListaDeProyectos } from '../editor/Proyectos'
@@ -111,9 +113,12 @@ export default function Editor() {
     return base.current
   }
 
-  function alPublicar({ respuesta, operaciones }) {
+  // Un video ya quedó en Cloudinary (aunque la publicación todavía no terminó)
+  const alSubirVideo = (viejo, nuevo) => setEstado((e) => reemplazarArchivo(e, viejo, nuevo))
+
+  function alPublicar({ respuesta, operaciones, estado: publicado }) {
     if (respuesta.archivos) base.current = respuesta.archivos
-    const nuevo = estadoPublicado(estado)
+    const nuevo = estadoPublicado(publicado)
     setPublicados((rutas) => rutasDespues(rutas, operaciones))
     setInicial(nuevo)
     setEstado(nuevo)
@@ -131,134 +136,147 @@ export default function Editor() {
   ]
 
   return (
-    <Page>
-      <header className="sticky top-0 z-30 border-b-[3px] border-ink bg-ink text-paper">
-        {/* Celular: "Editor" y los botones en una fila, el estado abajo. Compu: el estado debajo de "Editor" */}
-        <div className="mx-auto grid max-w-[1100px] grid-cols-[1fr_auto] items-center gap-x-2.5 gap-y-1.5 px-4 py-3 sm:gap-x-4 lg:px-6">
-          <p className="display col-start-1 row-start-1 text-[24px] leading-none tracking-[.03em] lg:text-[30px]">Editor</p>
-          <p className="eyebrow col-span-2 row-start-2 flex items-center gap-2 text-[10px] text-paper/70 sm:col-span-1 sm:col-start-1 lg:text-[11px]">
-            <span aria-hidden="true" className={`inline-block size-2 rounded-full ${hayCambios ? 'bg-rec' : 'bg-paper/40'}`} />
-            {hayCambios ? `${cambios.length} cambio${cambios.length === 1 ? '' : 's'} sin publicar` : 'Todo publicado'}
-          </p>
-          <div className="col-start-2 row-start-1 flex items-center gap-2.5 sm:row-span-2 sm:gap-4">
-            <a
-              href="/"
-              target="_blank"
-              rel="noreferrer"
-              className="eyebrow hidden min-h-11 items-center border-[3px] border-paper px-3.5 tracking-[.1em] hover:bg-paper hover:text-ink sm:inline-flex"
-            >
-              Ver la web ↗
-            </a>
-            <button
-              type="button"
-              onClick={() => abrirVistaPrevia(proyectoAbierto ? `/proyectos/${proyectoAbierto.carpeta}` : '/')}
-              className="eyebrow inline-flex min-h-11 items-center border-[3px] border-paper px-2.5 text-[11px] tracking-[.08em] hover:bg-paper hover:text-ink sm:px-3.5 sm:text-xs sm:tracking-[.1em]"
-            >
-              Vista previa
-            </button>
-            <Boton variante="principal" className="px-4! sm:px-5!" onClick={() => setPublicando(true)} disabled={!hayCambios}>
-              Publicar
-            </Boton>
+    <ContextoDeVideos value={servidor?.videos ?? VIDEOS_EN_GITHUB}>
+      <Page>
+        <header className="sticky top-0 z-30 border-b-[3px] border-ink bg-ink text-paper">
+          {/* Celular: "Editor" y los botones en una fila, el estado abajo. Compu: el estado debajo de "Editor" */}
+          <div className="mx-auto grid max-w-[1100px] grid-cols-[1fr_auto] items-center gap-x-2.5 gap-y-1.5 px-4 py-3 sm:gap-x-4 lg:px-6">
+            <p className="display col-start-1 row-start-1 text-[24px] leading-none tracking-[.03em] lg:text-[30px]">Editor</p>
+            <p className="eyebrow col-span-2 row-start-2 flex items-center gap-2 text-[10px] text-paper/70 sm:col-span-1 sm:col-start-1 lg:text-[11px]">
+              <span aria-hidden="true" className={`inline-block size-2 rounded-full ${hayCambios ? 'bg-rec' : 'bg-paper/40'}`} />
+              {hayCambios ? `${cambios.length} cambio${cambios.length === 1 ? '' : 's'} sin publicar` : 'Todo publicado'}
+            </p>
+            <div className="col-start-2 row-start-1 flex items-center gap-2.5 sm:row-span-2 sm:gap-4">
+              <a
+                href="/"
+                target="_blank"
+                rel="noreferrer"
+                className="eyebrow hidden min-h-11 items-center border-[3px] border-paper px-3.5 tracking-[.1em] hover:bg-paper hover:text-ink sm:inline-flex"
+              >
+                Ver la web ↗
+              </a>
+              <button
+                type="button"
+                onClick={() => abrirVistaPrevia(proyectoAbierto ? `/proyectos/${proyectoAbierto.carpeta}` : '/')}
+                className="eyebrow inline-flex min-h-11 items-center border-[3px] border-paper px-2.5 text-[11px] tracking-[.08em] hover:bg-paper hover:text-ink sm:px-3.5 sm:text-xs sm:tracking-[.1em]"
+              >
+                Vista previa
+              </button>
+              <Boton variante="principal" className="px-4! sm:px-5!" onClick={() => setPublicando(true)} disabled={!hayCambios}>
+                Publicar
+              </Boton>
+            </div>
           </div>
-        </div>
-        <nav aria-label="Secciones del editor" className="border-t-[3px] border-paper/15">
-          <ul className="mx-auto flex max-w-[1100px] overflow-x-auto px-2 [scrollbar-width:none] lg:px-4 [&::-webkit-scrollbar]:hidden">
-            {PESTANAS.map((p) => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  aria-current={pestana === p.id ? 'page' : undefined}
-                  onClick={() => {
-                    setPestana(p.id)
-                    setAbierto(null)
-                    window.scrollTo({ top: 0, behavior: 'instant' })
-                  }}
-                  className={`eyebrow min-h-11 px-3 tracking-[.1em] whitespace-nowrap transition-colors duration-150 lg:px-4 ${
-                    pestana === p.id ? 'bg-paper text-ink' : 'text-paper/80 hover:text-paper'
-                  }`}
-                >
-                  {p.nombre}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
-
-      <main id="contenido" className="mx-auto flex max-w-[1100px] flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-        {servidor && !servidor.listo && (
-          <div role="status" className="border-[3px] border-rec bg-white/50 p-4 text-[14px] leading-[1.55]">
-            <p className="font-bold text-rec">Por ahora se puede editar y ver la vista previa, pero todavía no publicar.</p>
-            <ul className="mt-1 list-disc pl-5">
-              {servidor.problemas.map((problema) => (
-                <li key={problema}>{problema}</li>
+          <nav aria-label="Secciones del editor" className="border-t-[3px] border-paper/15">
+            <ul className="mx-auto flex max-w-[1100px] overflow-x-auto px-2 [scrollbar-width:none] lg:px-4 [&::-webkit-scrollbar]:hidden">
+              {PESTANAS.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    aria-current={pestana === p.id ? 'page' : undefined}
+                    onClick={() => {
+                      setPestana(p.id)
+                      setAbierto(null)
+                      window.scrollTo({ top: 0, behavior: 'instant' })
+                    }}
+                    className={`eyebrow min-h-11 px-3 tracking-[.1em] whitespace-nowrap transition-colors duration-150 lg:px-4 ${
+                      pestana === p.id ? 'bg-paper text-ink' : 'text-paper/80 hover:text-paper'
+                    }`}
+                  >
+                    {p.nombre}
+                  </button>
+                </li>
               ))}
             </ul>
-            <p className="mt-1 text-ink/70">Los pasos para configurarlo están en el README del proyecto.</p>
-          </div>
-        )}
+          </nav>
+        </header>
 
-        <p className="text-[13px] leading-[1.55] text-ink/75">
-          Los cambios quedan en esta pantalla hasta que tocás <strong>Publicar</strong>: ahí se pide la clave y, uno o dos minutos después, se ven en la web.
-        </p>
+        <main id="contenido" className="mx-auto flex max-w-[1100px] flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
+          {servidor && !servidor.listo && (
+            <div role="status" className="border-[3px] border-rec bg-white/50 p-4 text-[14px] leading-[1.55]">
+              <p className="font-bold text-rec">Por ahora se puede editar y ver la vista previa, pero todavía no publicar.</p>
+              <ul className="mt-1 list-disc pl-5">
+                {servidor.problemas.map((problema) => (
+                  <li key={problema}>{problema}</li>
+                ))}
+              </ul>
+              <p className="mt-1 text-ink/70">Los pasos para configurarlo están en el README del proyecto.</p>
+            </div>
+          )}
+          {servidor?.avisos?.length > 0 && (
+            <div role="status" className="border-[3px] border-ink bg-white/50 p-4 text-[14px] leading-[1.55]">
+              <p className="font-bold">Videos en Cloudinary: falta un paso.</p>
+              <ul className="mt-1 list-disc pl-5">
+                {servidor.avisos.map((aviso) => (
+                  <li key={aviso}>{aviso}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-        {pestana === 'portada' && (
-          <PestanaPortada sitio={estado.sitio} medios={estado.medios} cambiarSitio={cambiarSitio} cambiarMedio={cambiarMedio} />
-        )}
-        {pestana === 'sobre-mi' && (
-          <PestanaSobreMi sitio={estado.sitio} medios={estado.medios} cambiarSobreMi={cambiarSobreMi} cambiarMedio={cambiarMedio} />
-        )}
-        {pestana === 'proyectos' &&
-          (proyectoAbierto ? (
-            <FormularioDeProyecto
-              proyecto={proyectoAbierto}
-              onCambio={cambiarProyecto}
-              onVolver={() => setAbierto(null)}
-              onVistaPrevia={() => abrirVistaPrevia(`/proyectos/${proyectoAbierto.carpeta}`)}
-            />
-          ) : (
-            <ListaDeProyectos
-              proyectos={estado.proyectos}
-              onCambio={cambiarProyectos}
-              onAbrir={(id) => {
-                setAbierto(id)
-                window.scrollTo({ top: 0, behavior: 'instant' })
-              }}
-              onAgregar={agregarProyecto}
-            />
-          ))}
-        {pestana === 'contacto' && <PestanaContacto sitio={estado.sitio} cambiarContacto={cambiarContacto} />}
-        {pestana === 'compartir' && <PestanaCompartir medios={estado.medios} cambiarMedio={cambiarMedio} />}
+          <p className="text-[13px] leading-[1.55] text-ink/75">
+            Los cambios quedan en esta pantalla hasta que tocás <strong>Publicar</strong>: ahí se pide la clave y, uno o dos minutos después, se ven en la web.
+          </p>
 
-        {hayCambios && (
-          <div className="flex flex-wrap items-center gap-3 border-t-[3px] border-ink pt-5">
-            {descartando ? (
-              <>
-                <p className="text-[13px] font-bold text-rec">¿Deshacer todos los cambios sin publicar?</p>
-                <Boton variante="peligro" onClick={descartar}>
-                  Sí, deshacer
-                </Boton>
-                <Boton onClick={() => setDescartando(false)}>No</Boton>
-              </>
+          {pestana === 'portada' && (
+            <PestanaPortada sitio={estado.sitio} medios={estado.medios} cambiarSitio={cambiarSitio} cambiarMedio={cambiarMedio} />
+          )}
+          {pestana === 'sobre-mi' && (
+            <PestanaSobreMi sitio={estado.sitio} medios={estado.medios} cambiarSobreMi={cambiarSobreMi} cambiarMedio={cambiarMedio} />
+          )}
+          {pestana === 'proyectos' &&
+            (proyectoAbierto ? (
+              <FormularioDeProyecto
+                proyecto={proyectoAbierto}
+                onCambio={cambiarProyecto}
+                onVolver={() => setAbierto(null)}
+                onVistaPrevia={() => abrirVistaPrevia(`/proyectos/${proyectoAbierto.carpeta}`)}
+              />
             ) : (
-              <Boton onClick={() => setDescartando(true)}>Deshacer los cambios sin publicar</Boton>
-            )}
-          </div>
-        )}
-      </main>
+              <ListaDeProyectos
+                proyectos={estado.proyectos}
+                onCambio={cambiarProyectos}
+                onAbrir={(id) => {
+                  setAbierto(id)
+                  window.scrollTo({ top: 0, behavior: 'instant' })
+                }}
+                onAgregar={agregarProyecto}
+              />
+            ))}
+          {pestana === 'contacto' && <PestanaContacto sitio={estado.sitio} cambiarContacto={cambiarContacto} />}
+          {pestana === 'compartir' && <PestanaCompartir medios={estado.medios} cambiarMedio={cambiarMedio} />}
 
-      {vistaPrevia && <VistaPrevia paginas={paginas} paginaInicial={vistaPrevia} onCerrar={() => setVistaPrevia(null)} />}
-      {publicando && (
-        <Publicar
-          estado={estado}
-          inicial={inicial}
-          publicados={publicados}
-          cambios={cambios}
-          obtenerBase={obtenerBase}
-          onCerrar={() => setPublicando(false)}
-          onPublicado={alPublicar}
-        />
-      )}
-    </Page>
+          {hayCambios && (
+            <div className="flex flex-wrap items-center gap-3 border-t-[3px] border-ink pt-5">
+              {descartando ? (
+                <>
+                  <p className="text-[13px] font-bold text-rec">¿Deshacer todos los cambios sin publicar?</p>
+                  <Boton variante="peligro" onClick={descartar}>
+                    Sí, deshacer
+                  </Boton>
+                  <Boton onClick={() => setDescartando(false)}>No</Boton>
+                </>
+              ) : (
+                <Boton onClick={() => setDescartando(true)}>Deshacer los cambios sin publicar</Boton>
+              )}
+            </div>
+          )}
+        </main>
+
+        {vistaPrevia && <VistaPrevia paginas={paginas} paginaInicial={vistaPrevia} onCerrar={() => setVistaPrevia(null)} />}
+        {publicando && (
+          <Publicar
+            estado={estado}
+            inicial={inicial}
+            publicados={publicados}
+            cambios={cambios}
+            obtenerBase={obtenerBase}
+            onCerrar={() => setPublicando(false)}
+            onPublicado={alPublicar}
+            onVideoSubido={alSubirVideo}
+          />
+        )}
+      </Page>
+    </ContextoDeVideos>
   )
 }

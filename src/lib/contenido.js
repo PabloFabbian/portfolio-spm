@@ -24,6 +24,24 @@ export const MAX_PROYECTOS = 30
 // Peso máximo de cada foto o video que se sube desde el editor (Vercel corta los pedidos de más de 4,5 MB)
 export const PESO_MAXIMO_DE_SUBIDA = 4 * 1024 * 1024
 
+// Encuadre: qué punto de la foto o del video queda siempre a la vista cuando el recuadro la recorta
+export const ENCUADRE_CENTRADO = '50% 50%'
+
+// Segundos que dura cada clip de video en la web, desde su "inicio" (después vuelve a empezar)
+export const DURACION_DEL_CLIP = 15
+
+// Cómo se escriben la cuenta ("Cloud name") y el identificador de un video en Cloudinary
+export const esCuentaDeCloudinary = (cuenta) => /^[a-z0-9][a-z0-9_-]{0,62}$/i.test(String(cuenta ?? ''))
+export const esIdDeCloudinary = (id) => /^\w[\w/-]{0,250}$/.test(String(id ?? '')) && !String(id).includes('//')
+
+/** Lee un encuadre "x% y%" (de 0 a 100). Devuelve null si no es válido. */
+export function leerEncuadre(valor) {
+  const partes = /^\s*(\d{1,3}(?:\.\d+)?)%\s+(\d{1,3}(?:\.\d+)?)%\s*$/.exec(String(valor ?? ''))
+  if (!partes) return null
+  const [x, y] = [partes[1], partes[2]].map((n) => Math.min(100, Math.max(0, Math.round(Number(n)))))
+  return `${x}% ${y}%`
+}
+
 /** Texto final de un archivo de contenido (JSON con sangría de 2 espacios) */
 export function serializar(datos) {
   return `${JSON.stringify(datos, null, 2)}\n`
@@ -60,7 +78,61 @@ function crearValidador() {
       return { [a]: texto(fila[a], d, { max: largoA }), [b]: texto(fila[b], d, { max: largoB }) }
     }).filter((fila) => fila[a] || fila[b])
 
-  return { errores, texto, lista, textos, pares }
+  /** Video guardado en Cloudinary: { cuenta, id, version, ancho?, alto?, duracion? } */
+  function videoEnLaNube(entrada, donde) {
+    const n = objeto(entrada)
+    const cuenta = String(n.cuenta ?? '')
+    const id = String(n.id ?? '')
+    const version = Number(n.version)
+    const valido = esCuentaDeCloudinary(cuenta) && esIdDeCloudinary(id) && Number.isInteger(version) && version > 0
+    if (!valido) {
+      errores.push(`${donde}: el video guardado en Cloudinary no es válido.`)
+      return null
+    }
+    const salida = { cuenta, id, version }
+    for (const clave of ['ancho', 'alto']) {
+      const numero = Number(n[clave])
+      if (Number.isInteger(numero) && numero > 0 && numero <= 20000) salida[clave] = numero
+    }
+    const duracion = Number(n.duracion)
+    if (Number.isFinite(duracion) && duracion > 0 && duracion <= 36000) salida.duracion = Math.round(duracion * 100) / 100
+    return salida
+  }
+
+  /**
+   * Ajustes de una foto o un video, o null si no tiene ninguno:
+   * - encuadre: el punto que queda siempre a la vista ("x% y%")
+   * - inicio: en los videos, desde qué segundo arranca el clip de 15 segundos
+   * - nube: en los videos guardados en Cloudinary, cuál es
+   */
+  function medio(entrada, donde, { video = false } = {}) {
+    const m = objeto(entrada)
+    const salida = {}
+    const encuadre = leerEncuadre(m.encuadre)
+    if (encuadre && encuadre !== ENCUADRE_CENTRADO) salida.encuadre = encuadre
+    if (video) {
+      const nube = m.nube == null ? null : videoEnLaNube(m.nube, donde)
+      const tope = nube?.duracion ? Math.max(0, nube.duracion - 1) : 36000
+      const inicio = Number(m.inicio)
+      const redondeado = Number.isFinite(inicio) ? Math.round(Math.min(Math.max(inicio, 0), tope) * 10) / 10 : 0
+      if (redondeado > 0) salida.inicio = redondeado
+      if (nube) salida.nube = nube
+    }
+    return Object.keys(salida).length ? salida : null
+  }
+
+  /** Ajustes de cada foto o video fijo de una carpeta (portada-1, tarjeta, video-principal...) */
+  function medios(entrada, donde, nombres, conVideo = []) {
+    const m = objeto(entrada)
+    const salida = {}
+    for (const nombre of nombres) {
+      const ajustes = medio(m[nombre], `${donde}, ${nombre}`, { video: conVideo.includes(nombre) })
+      if (ajustes) salida[nombre] = ajustes
+    }
+    return salida
+  }
+
+  return { errores, texto, lista, textos, pares, medio, medios }
 }
 
 /**
@@ -97,6 +169,9 @@ export function normalizarSitio(entrada) {
       whatsappMensaje: v.texto(contacto.whatsappMensaje, 'Contacto, mensaje de WhatsApp', { max: 300 }),
     },
   }
+
+  const fotos = v.medios(s.medios, 'Fotos', ARCHIVOS_DE_FOTOS)
+  if (Object.keys(fotos).length) datos.medios = fotos
 
   const { email, whatsappNumero } = datos.contacto
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) v.errores.push('Contacto, email: no parece un email.')
@@ -167,11 +242,15 @@ function normalizarProyecto(entrada, v, donde) {
       }
       const comoSeHizo = v.texto(pieza.comoSeHizo, dd, { max: 300 })
       if (comoSeHizo) salida.comoSeHizo = comoSeHizo
+      Object.assign(salida, v.medio(pieza, dd, { video: salida.tipo === 'video' }))
       return salida
     }),
   }
 
   proyecto.creditos = v.pares(p.creditos, d('crédito'), 20, 'rol', 'nombre', 60, 120)
+
+  const medios = v.medios(p.medios, d('fotos y videos'), ARCHIVOS_DE_PROYECTO, ['video-principal'])
+  if (Object.keys(medios).length) proyecto.medios = medios
   return proyecto
 }
 

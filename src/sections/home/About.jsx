@@ -19,6 +19,7 @@ export function About() {
                 alt={retrato.alt}
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
+                style={retrato.position ? { objectPosition: retrato.position } : undefined}
               />
             )}
           </div>
@@ -49,8 +50,9 @@ export function About() {
                 key={fact.label}
                 className="flex flex-wrap gap-x-5 gap-y-0.5 border-b-[3px] border-ink py-3 lg:gap-x-6 lg:gap-y-1 lg:py-3.5"
               >
-                <dt className="eyebrow basis-[120px] lg:basis-[140px]">{fact.label}</dt>
-                <dd className="flex-[1_1_160px] lg:flex-[1_1_200px]">{fact.value}</dd>
+                {/* Más chico que los párrafos: la tabla es información de apoyo */}
+                <dt className="eyebrow basis-[120px] text-[11px] lg:basis-[140px] lg:text-xs">{fact.label}</dt>
+                <dd className="flex-[1_1_160px] text-[13px] leading-[1.5] lg:flex-[1_1_200px] lg:text-sm">{fact.value}</dd>
               </div>
             ))}
           </Reveal>

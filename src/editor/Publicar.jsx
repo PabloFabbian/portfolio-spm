@@ -1,10 +1,26 @@
 // Ventana de Publicar: muestra qué cambia, pide la clave, sube los archivos y guarda
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { commitEnLaWeb, entrar, publicar, subir } from './api'
+import { ErrorDelEditor, commitEnLaWeb, entrar, firmarVideo, prepararVideo, publicar, subir } from './api'
+import { pesoLegible } from './archivos'
 import { Boton, Texto } from './campos'
-import { armarPublicacion } from './estado'
+import { archivoEnLaNube, armarPublicacion, claveDeClip, clipsDe, contenidoParaGuardar, reemplazarArchivo } from './estado'
+import { subirALaNube } from './nube'
 
-export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, onCerrar, onPublicado }) {
+// Clips que ya se le pidieron a Cloudinary en esta sesión (para no pedirlos dos veces si hay que reintentar)
+const clipsPedidos = new Set()
+
+/** Avisa a las pestañas abiertas de la web que hay una versión nueva (se recargan solas) */
+function avisarALaWeb(commit) {
+  try {
+    const canal = new BroadcastChannel('spm-web')
+    canal.postMessage({ tipo: 'publicado', commit })
+    canal.close()
+  } catch {
+    // navegador sin BroadcastChannel: hay que recargar a mano
+  }
+}
+
+export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, onCerrar, onPublicado, onVideoSubido }) {
   const dialogo = useRef(null)
   const idClave = useId()
   const [clave, setClave] = useState('')
@@ -13,9 +29,11 @@ export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, on
   const [error, setError] = useState(null)
   const [resultado, setResultado] = useState(null)
   const [enLaWeb, setEnLaWeb] = useState(null) // null · 'si' · 'tarda' · 'no-se-sabe'
+  const [avisos, setAvisos] = useState([])
+  const [conVideos, setConVideos] = useState(false)
 
-  const publicacion = useMemo(() => armarPublicacion(estado, inicial, publicados), [estado, inicial, publicados])
-  const errores = publicacion.errores
+  // Para mostrar antes de pedir la clave si falta corregir algo
+  const errores = useMemo(() => armarPublicacion(estado, inicial, publicados).errores, [estado, inicial, publicados])
 
   useEffect(() => {
     const ventana = dialogo.current
@@ -33,7 +51,10 @@ export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, on
       const commit = await commitEnLaWeb()
       if (!vivo) return
       if (commit === null) return setEnLaWeb('no-se-sabe')
-      if (commit === resultado.commit) return setEnLaWeb('si')
+      if (commit === resultado.commit) {
+        avisarALaWeb(commit)
+        return setEnLaWeb('si')
+      }
       intentos += 1
       if (intentos >= 60) return setEnLaWeb('tarda')
       temporizador = setTimeout(revisar, 5000)
@@ -50,10 +71,61 @@ export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, on
     if (!clave.trim()) return
     setFase('trabajando')
     setError(null)
+    setAvisos([])
     try {
       setPaso('Revisando la clave…')
       const { pase } = await entrar(clave)
 
+      // 1. Los videos nuevos van directo del navegador a Cloudinary. Apenas sube cada uno,
+      //    el editor lo anota: si algo falla después, al reintentar no se vuelve a subir.
+      let trabajo = estado
+      for (const clip of clipsDe(contenidoParaGuardar(inicial).proyectos.datos)) clipsPedidos.add(claveDeClip(clip))
+      const paraLaNube = armarPublicacion(trabajo, inicial, publicados).nube
+      for (const [i, { archivo, uso }] of paraLaNube.entries()) {
+        const cual = paraLaNube.length > 1 ? ` ${i + 1} de ${paraLaNube.length}` : ''
+        const inicio = archivo.inicio ?? 0
+        setPaso(`Subiendo el video${cual} a Cloudinary…`)
+        const firma = await firmarVideo(pase, { uso, inicio })
+        if (archivo.peso > firma.pesoMaximo) {
+          throw new ErrorDelEditor(`Un video pesa ${pesoLegible(archivo.peso)} y Cloudinary acepta hasta ${pesoLegible(firma.pesoMaximo)}.`)
+        }
+        const subido = await subirALaNube(firma, archivo.blob, (fraccion) =>
+          setPaso(`Subiendo el video${cual} a Cloudinary: ${Math.floor(fraccion * 100)}%`),
+        )
+        const nube = {
+          cuenta: firma.cuenta,
+          id: subido.public_id,
+          version: subido.version,
+          ancho: subido.width,
+          alto: subido.height,
+          duracion: subido.duration,
+        }
+        const enLaNube = archivoEnLaNube(nube, uso, archivo, archivo.url)
+        trabajo = reemplazarArchivo(trabajo, archivo, enLaNube)
+        onVideoSubido(archivo, enLaNube)
+        clipsPedidos.add(claveDeClip({ nube, uso, inicio }))
+      }
+
+      const publicacion = armarPublicacion(trabajo, inicial, publicados)
+      if (publicacion.errores.length) throw new ErrorDelEditor('Hay datos para corregir antes de publicar.', { errores: publicacion.errores })
+
+      // 2. Si cambió desde dónde arranca un video que ya estaba en Cloudinary, se pide el clip nuevo
+      const avisosNuevos = []
+      let pedidos = paraLaNube.length
+      for (const clip of clipsDe(publicacion.proyectos)) {
+        const claveClip = claveDeClip(clip)
+        if (clipsPedidos.has(claveClip)) continue
+        setPaso('Preparando los clips en Cloudinary…')
+        try {
+          await prepararVideo(pase, { id: clip.nube.id, uso: clip.uso, inicio: clip.inicio })
+          clipsPedidos.add(claveClip)
+          pedidos += 1
+        } catch (problema) {
+          avisosNuevos.push(`Cloudinary no pudo preparar un clip (${problema.message}). Si en unos minutos no se ve en la web, volvé a publicar.`)
+        }
+      }
+
+      // 3. Las fotos (y los videos chicos, si no hay Cloudinary) van al repositorio
       const operaciones = [...publicacion.operaciones]
       const total = publicacion.subidas.length
       for (const [i, { archivo, destino }] of publicacion.subidas.entries()) {
@@ -71,7 +143,9 @@ export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, on
         resumen: cambios.join('; '),
       })
       setClave('')
-      onPublicado({ respuesta, operaciones })
+      onPublicado({ respuesta, operaciones, estado: trabajo })
+      setAvisos(avisosNuevos)
+      setConVideos(pedidos > 0)
       setResultado(respuesta)
       setFase('listo')
     } catch (problema) {
@@ -191,6 +265,16 @@ export function Publicar({ estado, inicial, publicados, cambios, obtenerBase, on
                     La web se está actualizando: en uno o dos minutos se ve el cambio.
                   </p>
                 )}
+                {conVideos && (
+                  <p className="text-[14px] leading-[1.55] text-ink/75">
+                    Cloudinary está preparando los clips: los videos nuevos pueden tardar unos minutos más en aparecer.
+                  </p>
+                )}
+                {avisos.map((aviso) => (
+                  <p key={aviso} className="border-l-[3px] border-rec pl-2.5 text-[14px] leading-[1.55]">
+                    {aviso}
+                  </p>
+                ))}
               </>
             )}
             <Boton className="self-start" onClick={onCerrar}>

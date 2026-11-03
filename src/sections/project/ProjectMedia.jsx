@@ -1,5 +1,5 @@
-import { useReducedMotion } from 'framer-motion'
 import { Reveal } from '../../components/Reveal'
+import { Video } from '../../components/Video'
 import { photos } from '../../data/site'
 
 function Corner({ className }) {
@@ -8,8 +8,7 @@ function Corner({ className }) {
 
 /** Video (o imagen) principal del proyecto, enmarcado como el visor de una cámara */
 export function ProjectMedia({ project }) {
-  const reduce = useReducedMotion()
-  const { clip, image, cover, clipLabel, shortClipLabel, timecode, specs } = project.media
+  const { clip, clipPoster, clipStart, clipPosition, image, imagePosition, clipLabel, shortClipLabel, timecode, specs } = project.media
   const fallback = photos.frente
   const hasMedia = Boolean(clip || image)
 
@@ -17,19 +16,21 @@ export function ProjectMedia({ project }) {
     <section className="mx-auto max-w-[1440px] px-4 pb-8 lg:px-10 lg:pb-14">
       <Reveal className="relative aspect-[4/5] overflow-hidden bg-ink text-paper md:aspect-video lg:aspect-[21/9]">
         {clip && (
-          <video
+          <Video
             className="absolute inset-0 h-full w-full object-cover"
             src={clip}
-            poster={cover ?? undefined}
-            muted
-            loop
-            playsInline
-            autoPlay={!reduce}
-            preload="metadata"
+            poster={clipPoster}
+            position={clipPosition}
+            start={clipStart}
           />
         )}
         {!clip && image && (
-          <img src={image} alt={project.title} className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={image}
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover"
+            style={imagePosition ? { objectPosition: imagePosition } : undefined}
+          />
         )}
         {!hasMedia && fallback && (
           // Provisorio hasta que suban el video: la foto de la portada atenuada

@@ -2,6 +2,7 @@
 import { nuevoId } from './estado'
 import { CampoArchivo } from './CampoArchivo'
 import { ListaDeFilas, ListaDeTextos, Seccion, Texto } from './campos'
+import { MARCOS } from './contexto'
 
 export function PestanaPortada({ sitio, medios, cambiarSitio, cambiarMedio }) {
   return (
@@ -49,12 +50,16 @@ export function PestanaPortada({ sitio, medios, cambiarSitio, cambiarMedio }) {
         />
       </Seccion>
 
-      <Seccion titulo="Fotos de la portada" ayuda="Se ven recortadas en cuadrado en el celular y un poco más verticales en la compu: dejá la cara al centro.">
+      <Seccion
+        titulo="Fotos de la portada"
+        ayuda="Se ven recortadas en cuadrado en el celular y un poco más verticales en la compu. Con «Encuadre» elegís qué parte queda siempre a la vista."
+      >
         <CampoArchivo
           etiqueta="Foto fija"
           archivo={medios['portada-1']}
           onCambio={(archivo) => cambiarMedio('portada-1', archivo)}
           proporcion="aspect-square"
+          marcos={MARCOS.portada}
         />
         <CampoArchivo
           etiqueta="Foto que aparece y desaparece"
@@ -62,6 +67,7 @@ export function PestanaPortada({ sitio, medios, cambiarSitio, cambiarMedio }) {
           archivo={medios['portada-2']}
           onCambio={(archivo) => cambiarMedio('portada-2', archivo)}
           proporcion="aspect-square"
+          marcos={MARCOS.portada}
         />
       </Seccion>
 
@@ -86,9 +92,10 @@ export function PestanaSobreMi({ sitio, medios, cambiarSobreMi, cambiarMedio }) 
     <div className="flex flex-col gap-6">
       <Seccion titulo="Retrato">
         <CampoArchivo
-          ayuda="Vertical, con la cara al centro."
+          ayuda="Vertical. Se ve cuadrada en el celular: con «Encuadre» elegís qué parte queda a la vista."
           archivo={medios['sobre-mi']}
           onCambio={(archivo) => cambiarMedio('sobre-mi', archivo)}
+          marcos={MARCOS.sobreMi}
         />
       </Seccion>
       <Seccion titulo="Texto">

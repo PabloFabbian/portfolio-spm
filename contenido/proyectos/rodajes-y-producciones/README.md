@@ -12,6 +12,7 @@ Lo más fácil es cambiarlos desde el editor de la web (`/editar` → **Proyecto
 
 - Para fotos sirven `.jpg`, `.jpeg`, `.png` y `.webp`; para videos, `.mp4` y `.webm`.
 - Para reemplazar un archivo, subí otro con el mismo nombre. Si tiene otra extensión, borrá el anterior.
+- Los videos que se suben desde el editor quedan en Cloudinary, no en esta carpeta (están anotados en `contenido/proyectos.json`). Si hay uno, la web usa ese.
 - Mientras falte un archivo, en la web se ve un aviso del estilo **[Falta afiche.jpg]**.
 - Los textos de este proyecto (títulos de las piezas, créditos, etc.) están en [`contenido/proyectos.json`](../../proyectos.json).
 

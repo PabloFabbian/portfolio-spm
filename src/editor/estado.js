@@ -4,7 +4,12 @@
  *
  * Cada foto o video del editor es un "archivo":
  * - publicado: { origen: 'publicado', ruta, url, ext, kind } (ya está en el repo)
- * - nuevo:     { origen: 'nuevo', blob, url, ext, kind, peso } (elegido y sin publicar)
+ * - nube:      { origen: 'nube', nube, uso, url, poster, kind: 'video' } (video en Cloudinary;
+ *              "local" si se acaba de subir y url todavía es el archivo de la compu)
+ * - nuevo:     { origen: 'nuevo', blob, url, ext, kind, peso, destino: 'repo' | 'nube' }
+ *              (elegido y sin publicar)
+ * Además, cualquiera puede tener "encuadre" ("x% y%") y los videos, "inicio" (segundos).
+ * Esos ajustes viajan con el archivo: si se cambia la foto, se empieza de cero.
  */
 import sitioPublicado from '../../contenido/sitio.json'
 import proyectosPublicados from '../../contenido/proyectos.json'
@@ -20,6 +25,7 @@ import {
   normalizarProyectos,
   normalizarSitio,
 } from '../lib/contenido.js'
+import { urlDelClip, urlDelCuadro, usoDe } from '../lib/nube.js'
 import { shaDeTexto } from './archivos.js'
 
 const URLS = import.meta.glob(
@@ -59,12 +65,61 @@ function buscarPublicado(carpeta, nombre) {
   return candidatos.length ? archivoPublicado(candidatos[0]) : null
 }
 
+/** Encuadre e inicio de un archivo (lo que se guarda en el JSON junto a sus datos) */
+export function ajustesDe(archivo, { conNube = true } = {}) {
+  if (!archivo) return {}
+  const ajustes = {}
+  if (archivo.encuadre) ajustes.encuadre = archivo.encuadre
+  if (archivo.kind === 'video' && archivo.inicio > 0) ajustes.inicio = archivo.inicio
+  if (archivo.origen === 'nube' && conNube) ajustes.nube = archivo.nube
+  return ajustes
+}
+
+const conAjustes = (archivo, ajustes = {}) => {
+  if (!archivo) return null
+  const { encuadre, inicio } = ajustes
+  return { ...archivo, ...(encuadre ? { encuadre } : {}), ...(archivo.kind === 'video' && inicio > 0 ? { inicio } : {}) }
+}
+
+/** Video guardado en Cloudinary. Con "local", se muestra el archivo de la compu (recién subido) */
+export function archivoEnLaNube(nube, uso, ajustes = {}, local = null) {
+  const inicio = ajustes.inicio > 0 ? ajustes.inicio : 0
+  return conAjustes(
+    {
+      origen: 'nube',
+      kind: 'video',
+      ext: 'mp4',
+      nube,
+      uso,
+      // El clip de Cloudinary ya viene recortado desde "inicio"; recortado indica desde dónde
+      url: local ?? urlDelClip(nube, uso, inicio),
+      poster: local ? null : urlDelCuadro(nube, uso, inicio),
+      recortadoDesde: local ? null : inicio,
+      local: Boolean(local),
+    },
+    ajustes,
+  )
+}
+
+/** El archivo de un lugar fijo: el video de Cloudinary si lo hay, o el del repo */
+function archivoDelLugar(carpeta, nombre, ajustes = {}) {
+  if (ajustes.nube) return archivoEnLaNube(ajustes.nube, usoDe(nombre), ajustes)
+  return conAjustes(buscarPublicado(carpeta, nombre), ajustes)
+}
+
 let contador = 0
 export const nuevoId = () => `e${++contador}`
 const conId = (fila) => ({ ...fila, _id: nuevoId() })
 
+// En el editor, el encuadre y el inicio viven en cada archivo (ver ajustesDe), no en "medios"
+const sinMedios = (datos) => {
+  const copia = { ...datos }
+  delete copia.medios
+  return copia
+}
+
 function sitioParaEditar(sitio) {
-  return { ...sitio, sobreMi: { ...sitio.sobreMi, datos: sitio.sobreMi.datos.map(conId) } }
+  return { ...sinMedios(sitio), sobreMi: { ...sitio.sobreMi, datos: sitio.sobreMi.datos.map(conId) } }
 }
 
 export function proyectoParaEditar(p) {
@@ -72,9 +127,10 @@ export function proyectoParaEditar(p) {
   const galeriaPublicada = RUTAS_PUBLICADAS.map(partesDe).filter((x) => x.carpeta === carpeta && /^galeria-\d+$/.test(x.nombre))
   const ultimaPublicada = Math.max(0, ...galeriaPublicada.map((x) => Number(x.nombre.slice(8))))
   const cantidad = Math.max(p.galeria.piezas.length, ultimaPublicada)
+  const ajustes = p.medios ?? {}
 
   return {
-    ...p,
+    ...sinMedios(p),
     formatoDeCamara: p.formatoDeCamara ?? '',
     cinta: p.cinta ?? [],
     queHice: { intro: p.queHice?.intro ?? '', tareas: (p.queHice?.tareas ?? []).map(conId) },
@@ -84,7 +140,9 @@ export function proyectoParaEditar(p) {
       titulo: p.galeria.titulo,
       piezas: Array.from({ length: cantidad }, (_, i) => {
         const pieza = p.galeria.piezas[i] ?? { tipo: 'foto', titulo: '' }
-        const archivo = buscarPublicado(carpeta, `galeria-${i + 1}`)
+        const archivo = pieza.nube
+          ? archivoEnLaNube(pieza.nube, 'galeria', pieza)
+          : conAjustes(buscarPublicado(carpeta, `galeria-${i + 1}`), pieza)
         return {
           tipo: archivo ? (archivo.kind === 'video' ? 'video' : 'foto') : pieza.tipo,
           titulo: pieza.titulo ?? '',
@@ -95,7 +153,7 @@ export function proyectoParaEditar(p) {
       }),
     },
     _id: nuevoId(),
-    _medios: Object.fromEntries(ARCHIVOS_DE_PROYECTO.map((nombre) => [nombre, buscarPublicado(carpeta, nombre)])),
+    _medios: Object.fromEntries(ARCHIVOS_DE_PROYECTO.map((nombre) => [nombre, archivoDelLugar(carpeta, nombre, ajustes[nombre])])),
   }
 }
 
@@ -129,7 +187,7 @@ export function crearEstadoInicial() {
     sitio: sitioParaEditar(sitio),
     proyectos: proyectos.map(proyectoParaEditar),
     medios: {
-      ...Object.fromEntries(ARCHIVOS_DE_FOTOS.map((nombre) => [nombre, buscarPublicado(CARPETA_FOTOS, nombre)])),
+      ...Object.fromEntries(ARCHIVOS_DE_FOTOS.map((nombre) => [nombre, archivoDelLugar(CARPETA_FOTOS, nombre, sitio.medios?.[nombre])])),
       compartir: { origen: 'publicado', ruta: RUTA_COMPARTIR, url: '/imagen-para-compartir.jpg', ext: 'jpg', kind: 'image' },
     },
   }
@@ -140,15 +198,41 @@ export async function baseInicial() {
   return { [RUTA_SITIO]: await shaDeTexto(textoSitio), [RUTA_PROYECTOS]: await shaDeTexto(textoProyectos) }
 }
 
-/** El contenido tal como se guardaría: { sitio: {datos, errores}, proyectos: {datos, errores} } */
-export function contenidoParaGuardar(estado) {
-  return { sitio: normalizarSitio(estado.sitio), proyectos: normalizarProyectos(estado.proyectos) }
+/**
+ * El contenido tal como se guardaría: { sitio: {datos, errores}, proyectos: {datos, errores} }.
+ * Con vistaPrevia, los videos recién subidos se muestran desde la compu (Cloudinary puede
+ * estar preparándolos todavía).
+ */
+export function contenidoParaGuardar(estado, { vistaPrevia = false } = {}) {
+  const ajustes = (archivo) => ajustesDe(archivo, { conNube: !(vistaPrevia && archivo?.local) })
+  const sitio = { ...estado.sitio, medios: Object.fromEntries(ARCHIVOS_DE_FOTOS.map((n) => [n, ajustes(estado.medios[n])])) }
+  const proyectos = estado.proyectos.map((p) => ({
+    ...p,
+    medios: Object.fromEntries(ARCHIVOS_DE_PROYECTO.map((n) => [n, ajustes(p._medios[n])])),
+    galeria: { ...p.galeria, piezas: p.galeria.piezas.map((pieza) => ({ ...pieza, ...ajustes(pieza._archivo) })) },
+  }))
+  return { sitio: normalizarSitio(sitio), proyectos: normalizarProyectos(proyectos) }
 }
 
+/** Cada clip de Cloudinary de un contenido ya normalizado: [{ nube, uso, inicio }] */
+export function clipsDe(proyectos) {
+  const clips = []
+  for (const p of proyectos) {
+    const principal = p.medios?.['video-principal']
+    if (principal?.nube) clips.push({ nube: principal.nube, uso: 'principal', inicio: principal.inicio ?? 0 })
+    for (const pieza of p.galeria.piezas) if (pieza.nube) clips.push({ nube: pieza.nube, uso: 'galeria', inicio: pieza.inicio ?? 0 })
+  }
+  return clips
+}
+
+/** Identifica una versión preparada de un clip (el mismo video, uso e inicio) */
+export const claveDeClip = ({ nube, uso, inicio }) => `${nube.cuenta}/${nube.id}|${uso}|${inicio ?? 0}`
+
 const igual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+const claveDeArchivo = (archivo) => (archivo?.origen === 'nube' ? `nube:${archivo.nube.id}` : (archivo?.ruta ?? null))
 const mismoArchivo = (a, b) => {
   if (a?.origen === 'nuevo' || b?.origen === 'nuevo') return a === b
-  return (a?.ruta ?? null) === (b?.ruta ?? null)
+  return claveDeArchivo(a) === claveDeArchivo(b)
 }
 
 /** Lista de cambios sin publicar, en palabras (también es el mensaje del commit) */
@@ -159,7 +243,7 @@ export function listarCambios(estado, inicial) {
   const s0 = antes.sitio.datos
   const cambios = []
 
-  const portada = (s) => [s.nombre, s.nombreEnRenglones, s.profesion, s.frase, s.cinta, s.anio]
+  const portada = (s) => [s.nombre, s.nombreEnRenglones, s.profesion, s.frase, s.cinta, s.anio, s.medios?.['portada-1'], s.medios?.['portada-2']]
   if (
     !igual(portada(s1), portada(s0)) ||
     !mismoArchivo(estado.medios['portada-1'], inicial.medios['portada-1']) ||
@@ -167,7 +251,11 @@ export function listarCambios(estado, inicial) {
   ) {
     cambios.push('Portada')
   }
-  if (!igual(s1.sobreMi, s0.sobreMi) || !mismoArchivo(estado.medios['sobre-mi'], inicial.medios['sobre-mi'])) {
+  if (
+    !igual(s1.sobreMi, s0.sobreMi) ||
+    !igual(s1.medios?.['sobre-mi'], s0.medios?.['sobre-mi']) ||
+    !mismoArchivo(estado.medios['sobre-mi'], inicial.medios['sobre-mi'])
+  ) {
     cambios.push('Sobre mí')
   }
   if (!igual(s1.contacto, s0.contacto)) cambios.push('Contacto')
@@ -189,11 +277,12 @@ export function listarCambios(estado, inicial) {
       return
     }
     const partes = []
-    const sinGaleria = (datosDelProyecto) => ({ ...datosDelProyecto, galeria: null })
-    if (!igual(sinGaleria(datos), sinGaleria(previo.datos))) partes.push('textos')
+    const soloTextos = (datosDelProyecto) => ({ ...datosDelProyecto, galeria: null, medios: null })
+    if (!igual(soloTextos(datos), soloTextos(previo.datos))) partes.push('textos')
     const NOMBRES = { tarjeta: 'tarjeta', 'video-principal': 'video principal', 'imagen-principal': 'imagen principal', afiche: 'afiche' }
     for (const [clave, texto] of Object.entries(NOMBRES)) {
-      if (!mismoArchivo(p._medios[clave], previo.p._medios[clave])) partes.push(texto)
+      const ajustesCambiaron = !igual(datos.medios?.[clave], previo.datos.medios?.[clave])
+      if (!mismoArchivo(p._medios[clave], previo.p._medios[clave]) || ajustesCambiaron) partes.push(texto)
     }
     const piezas = p.galeria.piezas
     const piezasAntes = previo.p.galeria.piezas
@@ -214,19 +303,24 @@ export function listarCambios(estado, inicial) {
 /**
  * Arma lo que hay que mandar al publicar.
  * publicados: rutas de fotos y videos que hay ahora en el repo.
- * Devuelve { sitio, proyectos, errores, operaciones, subidas: [{ archivo, destino }] }.
+ * Devuelve { sitio, proyectos, errores, operaciones, subidas: [{ archivo, destino }],
+ * nube: [{ archivo, uso }] } (los videos que primero hay que subir a Cloudinary).
  */
 export function armarPublicacion(estado, inicial, publicados) {
   const { sitio, proyectos } = contenidoParaGuardar(estado)
   const operaciones = []
   const subidas = []
+  const nube = []
   const enCarpeta = (carpeta) => publicados.filter((ruta) => partesDe(ruta).carpeta === carpeta)
+  const vaALaNube = (archivo) => archivo?.origen === 'nuevo' && archivo.destino === 'nube'
 
-  // Archivos de nombre fijo (portada-1, tarjeta, afiche...)
+  // Archivos de nombre fijo (portada-1, tarjeta, afiche...). Si el video está en Cloudinary,
+  // se borra el archivo del repo con ese nombre (si había).
   function fijo(carpeta, nombre, archivo) {
     let destino = null
     if (archivo?.origen === 'publicado') destino = archivo.ruta
-    if (archivo?.origen === 'nuevo') {
+    if (vaALaNube(archivo)) nube.push({ archivo, uso: usoDe(nombre) })
+    else if (archivo?.origen === 'nuevo') {
       destino = `${carpeta}/${nombre}.${archivo.ext}`
       subidas.push({ archivo, destino })
     }
@@ -246,7 +340,8 @@ export function armarPublicacion(estado, inicial, publicados) {
     const destinos = new Set()
     p.galeria.piezas.forEach((pieza, i) => {
       const archivo = pieza._archivo
-      if (!archivo) return
+      if (!archivo || archivo.origen === 'nube') return
+      if (vaALaNube(archivo)) return nube.push({ archivo, uso: 'galeria' })
       const destino = `${carpeta}/galeria-${i + 1}.${archivo.ext}`
       destinos.add(destino)
       if (archivo.origen === 'nuevo') subidas.push({ archivo, destino })
@@ -268,6 +363,22 @@ export function armarPublicacion(estado, inicial, publicados) {
     errores: [...sitio.errores, ...proyectos.errores],
     operaciones,
     subidas,
+    nube,
+  }
+}
+
+/** El mismo estado con un archivo reemplazado por otro (por ejemplo, un video que ya se subió) */
+export function reemplazarArchivo(estado, viejo, nuevo) {
+  const cambiar = (archivo) => (archivo === viejo ? nuevo : archivo)
+  const cambiarTodos = (medios) => Object.fromEntries(Object.entries(medios).map(([nombre, archivo]) => [nombre, cambiar(archivo)]))
+  return {
+    ...estado,
+    medios: cambiarTodos(estado.medios),
+    proyectos: estado.proyectos.map((p) => ({
+      ...p,
+      _medios: cambiarTodos(p._medios),
+      galeria: { ...p.galeria, piezas: p.galeria.piezas.map((pieza) => (pieza._archivo === viejo ? { ...pieza, _archivo: nuevo } : pieza)) },
+    })),
   }
 }
 
@@ -282,10 +393,12 @@ export function rutasDespues(publicados, operaciones) {
   return [...rutas]
 }
 
-/** Después de publicar, cada archivo pasa a ser "publicado" en la ruta donde quedó */
+/** Después de publicar, cada archivo del repo pasa a ser "publicado" en la ruta donde quedó (los de Cloudinary quedan igual) */
 export function estadoPublicado(estado) {
-  const fijar = (archivo, ruta) =>
-    archivo ? { origen: 'publicado', ruta, url: archivo.url, ext: archivo.ext, kind: archivo.kind } : null
+  const fijar = (archivo, ruta) => {
+    if (!archivo || archivo.origen === 'nube') return archivo
+    return conAjustes({ origen: 'publicado', ruta, url: archivo.url, ext: archivo.ext, kind: archivo.kind }, archivo)
+  }
   const enSuLugar = (archivo, carpeta, nombre) =>
     archivo?.origen === 'nuevo' ? fijar(archivo, `${carpeta}/${nombre}.${archivo.ext}`) : archivo
 
@@ -314,10 +427,13 @@ export function estadoPublicado(estado) {
 
 /** Lo que necesita la web para mostrar el borrador en la vista previa (ver src/data/vista-previa.js) */
 export function datosDeVistaPrevia(estado) {
-  const { sitio, proyectos } = contenidoParaGuardar(estado)
+  const { sitio, proyectos } = contenidoParaGuardar(estado, { vistaPrevia: true })
   const archivos = {}
   const poner = (carpeta, nombre, archivo) => {
-    if (archivo?.url) archivos[`/${carpeta}/${nombre}.${archivo.ext}`] = archivo.url
+    // Los videos de Cloudinary los arma la web con lo que dice el contenido
+    if (!archivo?.url || (archivo.origen === 'nube' && !archivo.local)) return
+    const ext = archivo.kind === 'video' ? (archivo.ext === 'webm' ? 'webm' : 'mp4') : archivo.ext
+    archivos[`/${carpeta}/${nombre}.${ext}`] = archivo.url
   }
   for (const nombre of ARCHIVOS_DE_FOTOS) poner(CARPETA_FOTOS, nombre, estado.medios[nombre])
   for (const p of estado.proyectos) {

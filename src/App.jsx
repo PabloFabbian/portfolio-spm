@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 import { AnimatePresence, MotionConfig } from 'framer-motion'
+import { useRecargarAlPublicar } from './hooks/useRecargarAlPublicar'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Project from './pages/Project'
@@ -10,6 +11,7 @@ const Editor = lazy(() => import('./pages/Editor'))
 
 function AnimatedRoutes() {
   const location = useLocation()
+  useRecargarAlPublicar()
 
   // mode="wait": la página que sale termina su fundido antes de que entre la nueva
   return (

@@ -53,10 +53,15 @@ const fotos =
         }),
   ).fotos ?? {}
 
-const photo = (file, alt) => (file ? { src: file.url, width: 1200, height: 1200, alt } : null)
+// Encuadre de cada foto: el punto que queda a la vista cuando el recuadro la recorta
+const ajustes = contenido.medios ?? {}
+const photo = (slot, alt) => {
+  const file = fotos[slot]
+  return file ? { src: file.url, width: 1200, height: 1200, alt, position: ajustes[slot]?.encuadre ?? null } : null
+}
 
 export const photos = {
-  frente: photo(fotos['portada-1'], `${name}`),
-  perfil: photo(fotos['portada-2'], `${name}`),
-  sobreMi: photo(fotos['sobre-mi'], `Retrato de ${name}`),
+  frente: photo('portada-1', `${name}`),
+  perfil: photo('portada-2', `${name}`),
+  sobreMi: photo('sobre-mi', `Retrato de ${name}`),
 }
