@@ -19,15 +19,15 @@
     "ficha": [
       {
         "dato": "Rol",
-        "valor": "Producción integral, de principio a fin"
+        "valor": "Creador y unico organizador."
       },
       {
         "dato": "Tareas",
-        "valor": "Armado, filmación y edición"
+        "valor": "Produccion integral."
       },
       {
         "dato": "Formato",
-        "valor": "Producción de eventos musicales"
+        "valor": "Fiesta con bandas en vivo"
       },
       {
         "dato": "Año",
@@ -36,8 +36,8 @@
     ],
     "frase": "Mi experiencia más completa y transversal en producción.",
     "texto": [
-      "El Club Debede es mi proyecto personal: noches de música en vivo en bares, con el foco puesto en la música.",
-      "Lo produzco de principio a fin. Armo cada fecha, estoy en el show y después filmo y edito los videos que cuentan cada noche.",
+      "El Club Debede es mi proyecto personal: ciclo de fiestas con dj y bandas en vivo. Cada fiesta tiene una tematica distinta, rock, funk, pop, disco... Finalizado el primer año con seis fechas realizadas, haciendo sol out en cada una de ellas.",
+      "Lo produzco de principio a fin. Eleccion de bandas. Negociacion con dueños y managers. COntratacion de fotografia. Contratacion de Dj. Creacion de contenido en redes. Manejo de redes sociales. Venta de entradas. Produccion en vivo del evento.",
       "Es donde junto todo lo que aprendí en producción: la organización previa, la resolución en vivo y el trabajo audiovisual."
     ],
     "cinta": [
@@ -48,7 +48,7 @@
       "Música en vivo"
     ],
     "queHice": {
-      "intro": "Cada noche del club pasa por mis manos, de la idea al video final.",
+      "intro": "Cada noche del club pasa por mis manos.",
       "tareas": [
         {
           "momento": "Antes",
@@ -62,8 +62,8 @@
         },
         {
           "momento": "Durante",
-          "titulo": "Filmación",
-          "texto": "Registrar la noche mientras sucede: el show, la gente y lo que pasa atrás."
+          "titulo": "Produccion en vivo",
+          "texto": "Produccion"
         },
         {
           "momento": "Después",
@@ -81,13 +81,14 @@
           "comoSeHizo": "[Cómo se preparó el bar para esa fecha]"
         },
         {
-          "tipo": "video",
+          "tipo": "foto",
           "titulo": "El show"
         },
         {
           "tipo": "foto",
           "titulo": "La gente",
-          "comoSeHizo": "[Cómo se llenó el bar esa noche]"
+          "comoSeHizo": "[Cómo se llenó el bar esa noche]",
+          "encuadre": "52% 34%"
         },
         {
           "tipo": "video",
@@ -112,7 +113,12 @@
         "rol": "Lugares",
         "nombre": "[Bares donde se hizo]"
       }
-    ]
+    ],
+    "medios": {
+      "tarjeta": {
+        "encuadre": "78% 54%"
+      }
+    }
   },
   {
     "carpeta": "rodajes-y-producciones",
