@@ -91,8 +91,9 @@
           "encuadre": "52% 34%"
         },
         {
-          "tipo": "video",
-          "titulo": "Detrás"
+          "tipo": "foto",
+          "titulo": "Detrás",
+          "encuadre": "46% 50%"
         }
       ]
     },
@@ -107,11 +108,11 @@
       },
       {
         "rol": "Bandas",
-        "nombre": "[Nombres de las bandas]"
+        "nombre": "La reja, Ian Cater, Ala Sur, Benja Ciotta, Walter Melon, Relojes vacios, Perla Madre. Entre otros"
       },
       {
         "rol": "Lugares",
-        "nombre": "[Bares donde se hizo]"
+        "nombre": "Moscú, La dama de Bollini, El portal, Simona, Otra Historia."
       }
     ],
     "medios": {
