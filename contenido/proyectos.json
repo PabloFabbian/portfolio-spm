@@ -131,7 +131,7 @@
     "etiqueta": "Rodajes",
     "categoria": "Coberturas · Videoclips · Rodajes",
     "anio": "[Años]",
-    "lineaEnLaLista": "Cobertura de alfombra roja · Videoclips · Rodajes",
+    "lineaEnLaLista": "Rodaje - Cortometrajes - Videoclips - Coberturas Alfombra roja",
     "bajada": "Coberturas de alfombra roja, videoclips y rodajes de la facultad: del evento a la edición final.",
     "colores": {
       "fondo": "rojo",
@@ -177,7 +177,7 @@
           "comoSeHizo": "[Cómo se hizo esta toma]"
         },
         {
-          "tipo": "video",
+          "tipo": "foto",
           "titulo": "Video 1"
         },
         {
