@@ -438,6 +438,18 @@
         "rol": "Equipo",
         "nombre": "[Nombres]"
       }
-    ]
+    ],
+    "medios": {
+      "video-principal": {
+        "nube": {
+          "cuenta": "mtczayco",
+          "id": "nc912grhrearpuaaj9xq",
+          "version": 1794846394,
+          "ancho": 3840,
+          "alto": 2160,
+          "duracion": 11.7
+        }
+      }
+    }
   }
 ]
