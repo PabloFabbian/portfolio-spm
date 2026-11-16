@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { animate, motion, useInView, useMotionValue, useReducedMotion } from 'framer-motion'
 import { COLOR, EASE } from '../lib/tokens'
 import { Halftone } from './Halftone'
@@ -107,31 +107,42 @@ export function MediaCarousel({ items, title, eyebrow = '(Clips y fotos)' }) {
     return () => current.current?.stop()
   }, [])
 
-  const onDragEnd = (_, info) => {
-    dragging.current = false
-    const step = getStep()
-    if (!step) return
-    const { offset, velocity } = info
-    const far = Math.abs(offset.x) > step * 0.2
-    const fast = Math.abs(velocity.x) > 500
-    if (far || fast) {
-      const direction = -Math.sign(far ? offset.x : velocity.x)
-      const amount = Math.min(2, Math.max(1, Math.round(Math.abs(offset.x) / step)))
-      go(direction * amount)
-    } else {
-      playback.current = animate(x, -pos.current * step, { duration: 0.4, ease: EASE })
-    }
-  }
+  const onDragEnd = useCallback(
+    (_, info) => {
+      dragging.current = false
+      const step = getStep()
+      if (!step) return
+      const { offset, velocity } = info
+      const far = Math.abs(offset.x) > step * 0.2
+      const fast = Math.abs(velocity.x) > 500
+      if (far || fast) {
+        const direction = -Math.sign(far ? offset.x : velocity.x)
+        const amount = Math.min(2, Math.max(1, Math.round(Math.abs(offset.x) / step)))
+        go(direction * amount)
+      } else {
+        playback.current = animate(x, -pos.current * step, { duration: 0.4, ease: EASE })
+      }
+    },
+    [getStep, go, x],
+  )
 
-  const onKeyDown = (event) => {
-    if (event.key === 'ArrowRight') {
-      event.preventDefault()
-      go(1)
-    } else if (event.key === 'ArrowLeft') {
-      event.preventDefault()
-      go(-1)
-    }
-  }
+  const onKeyDown = useCallback(
+    (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        go(1)
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        go(-1)
+      }
+    },
+    [go],
+  )
+
+  const onDragStart = useCallback(() => {
+    dragging.current = true
+    playback.current?.stop()
+  }, [])
 
   return (
     <section aria-labelledby="carrusel-titulo" className="mx-auto max-w-[1440px] px-4 pb-14 lg:px-10 lg:pb-24">
@@ -208,35 +219,34 @@ export function MediaCarousel({ items, title, eyebrow = '(Clips y fotos)' }) {
           drag="x"
           dragMomentum={false}
           dragElastic={0}
-          onDragStart={() => {
-            dragging.current = true
-            playback.current?.stop()
-          }}
+          onDragStart={onDragStart}
           onDragEnd={onDragEnd}
         >
           {COPIES.flatMap((copy) =>
-            items.map((item, i) => {
-              const isReal = copy === 1
-              return (
-                <div
-                  key={`${copy}-${item.title}`}
-                  className="min-w-0 shrink-0 basis-[82%] md:basis-[calc((100%_-_24px)/2)] lg:basis-[calc((100%_-_48px)/3)]"
-                  role={isReal ? 'group' : undefined}
-                  aria-roledescription={isReal ? 'diapositiva' : undefined}
-                  aria-label={isReal ? `${i + 1} de ${n}: ${item.title}` : undefined}
-                  aria-hidden={isReal ? undefined : true}
-                  inert={isReal ? undefined : true}
-                >
-                  {item.type === 'clip' ? <ClipCard item={item} /> : <PhotoCard item={item} />}
-                </div>
-              )
-            }),
+            items.map((item, i) => (
+              <Slide key={`${copy}-${item.title}`} item={item} index={i} total={n} isReal={copy === 1} />
+            )),
           )}
         </motion.div>
       </div>
     </section>
   )
 }
+
+const Slide = memo(function Slide({ item, index, total, isReal }) {
+  return (
+    <div
+      className="min-w-0 shrink-0 basis-[82%] md:basis-[calc((100%_-_24px)/2)] lg:basis-[calc((100%_-_48px)/3)]"
+      role={isReal ? 'group' : undefined}
+      aria-roledescription={isReal ? 'diapositiva' : undefined}
+      aria-label={isReal ? `${index + 1} de ${total}: ${item.title}` : undefined}
+      aria-hidden={isReal ? undefined : true}
+      inert={isReal ? undefined : true}
+    >
+      {item.type === 'clip' ? <ClipCard item={item} /> : <PhotoCard item={item} />}
+    </div>
+  )
+})
 
 function ControlButton({ label, onClick, solid = false, children }) {
   return (
@@ -257,7 +267,7 @@ function Corner({ className }) {
   return <span aria-hidden="true" className={`absolute size-[26px] border-paper lg:size-8 ${className}`} />
 }
 
-function ClipCard({ item }) {
+const ClipCard = memo(function ClipCard({ item }) {
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-ink text-paper">
       {item.src ? (
@@ -292,9 +302,9 @@ function ClipCard({ item }) {
       </div>
     </div>
   )
-}
+})
 
-function PhotoCard({ item }) {
+const PhotoCard = memo(function PhotoCard({ item }) {
   const bg = item.tone?.bg ?? 'paper'
   // En pantallas táctiles no hay "pasar el cursor": tocar la foto muestra cómo se hizo
   const [open, setOpen] = useState(false)
@@ -348,4 +358,4 @@ function PhotoCard({ item }) {
       )}
     </figure>
   )
-}
+})

@@ -3,10 +3,10 @@ import { Header } from '../components/Header'
 import { ArrowLeft } from '../components/icons'
 import { Page } from '../components/Page'
 import { site } from '../data/site'
-import { useDocumentTitle } from '../hooks/usePageScroll'
+import { usePageSeo } from '../hooks/usePageSeo'
 
 export default function NotFound() {
-  useDocumentTitle(`Página no encontrada · ${site.name}`)
+  usePageSeo({ title: `Página no encontrada · ${site.name}`, noindex: true })
 
   return (
     <Page>

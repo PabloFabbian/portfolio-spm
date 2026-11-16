@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { DURACION_DEL_CLIP } from '../lib/contenido'
 
@@ -9,7 +9,7 @@ import { DURACION_DEL_CLIP } from '../lib/contenido'
  * - start: desde qué segundo arranca el clip de 15 segundos, para los videos que no vienen
  *   ya recortados (los de Cloudinary sí vienen recortados y arrancan en 0).
  */
-export function Video({ src, poster = null, position = null, start = 0, className = '' }) {
+export const Video = memo(function Video({ src, poster = null, position = null, start = 0, className = '' }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
 
@@ -63,4 +63,4 @@ export function Video({ src, poster = null, position = null, start = 0, classNam
       preload={poster ? 'none' : 'metadata'}
     />
   )
-}
+})

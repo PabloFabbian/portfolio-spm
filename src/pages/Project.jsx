@@ -5,7 +5,8 @@ import { MediaCarousel } from '../components/MediaCarousel'
 import { Page } from '../components/Page'
 import { findProject } from '../data/projects'
 import { site } from '../data/site'
-import { useDocumentTitle, usePageScroll } from '../hooks/usePageScroll'
+import { usePageScroll } from '../hooks/usePageScroll'
+import { usePageSeo } from '../hooks/usePageSeo'
 import { NextProject } from '../sections/project/NextProject'
 import { ProjectAbout, ProjectCredits, ProjectFacts, ProjectTasks } from '../sections/project/ProjectDetails'
 import { ProjectHero } from '../sections/project/ProjectHero'
@@ -16,7 +17,15 @@ export default function Project() {
   const { slug } = useParams()
   const found = findProject(slug)
   usePageScroll()
-  useDocumentTitle(found ? `${found.project.title} · ${site.name}` : `Página no encontrada · ${site.name}`)
+  usePageSeo(
+    found
+      ? {
+          title: `${found.project.title} · ${site.name}`,
+          description: (/^\[/.test(found.project.summary) ? '' : found.project.summary) || `${found.project.title}, proyecto de ${site.name}.`,
+          path: `/proyectos/${found.project.slug}`,
+        }
+      : { title: `Página no encontrada · ${site.name}`, noindex: true },
+  )
 
   if (!found) return <NotFound />
 

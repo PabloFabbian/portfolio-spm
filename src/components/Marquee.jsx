@@ -1,11 +1,11 @@
-import { Fragment } from 'react'
+import { Fragment, memo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
 /**
  * Cinta negra con palabras que pasan en bucle.
  * Repite la lista dos veces y la desplaza un 50% para que el loop no se note.
  */
-export function Marquee({
+export const Marquee = memo(function Marquee({
   items,
   separator = '/',
   wordClassName = 'text-rec',
@@ -32,4 +32,4 @@ export function Marquee({
       </motion.div>
     </div>
   )
-}
+})

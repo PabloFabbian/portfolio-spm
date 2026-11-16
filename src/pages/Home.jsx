@@ -2,7 +2,8 @@ import { Header } from '../components/Header'
 import { Marquee } from '../components/Marquee'
 import { Page } from '../components/Page'
 import { site } from '../data/site'
-import { useDocumentTitle, usePageScroll } from '../hooks/usePageScroll'
+import { usePageScroll } from '../hooks/usePageScroll'
+import { usePageSeo } from '../hooks/usePageSeo'
 import { About } from '../sections/home/About'
 import { Contact } from '../sections/home/Contact'
 import { Hero } from '../sections/home/Hero'
@@ -10,7 +11,11 @@ import { Works } from '../sections/home/Works'
 
 export default function Home() {
   usePageScroll()
-  useDocumentTitle(`${site.name} · ${site.role}`)
+  usePageSeo({
+    title: `${site.name} · ${site.role}`,
+    description: `Portfolio de ${site.name}, ${site.role.toLowerCase()}: ${site.tags.join(', ').toLowerCase()}.`,
+    path: '/',
+  })
 
   return (
     <Page>

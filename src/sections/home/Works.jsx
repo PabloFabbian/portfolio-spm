@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Halftone } from '../../components/Halftone'
@@ -11,6 +11,7 @@ const projectUrl = (project) => `/proyectos/${project.slug}`
 
 export function Works() {
   const [active, setActive] = useState(0)
+  const activate = useCallback((i) => setActive(i), [])
 
   return (
     <section id="trabajos" className="mx-auto max-w-[1440px] pt-12 pb-14 lg:px-10 lg:pt-[72px] lg:pb-[88px]">
@@ -28,70 +29,79 @@ export function Works() {
       {/* Escritorio: lista + visor que cambia al pasar el cursor */}
       <Reveal className="hidden items-start gap-10 lg:flex">
         <ul className="min-w-0 flex-[1_1_440px] border-t-[3px] border-ink">
-          {projects.map((project, i) => {
-            const isActive = i === active
-            return (
-              <li key={project.slug}>
-                <Link
-                  to={projectUrl(project)}
-                  onMouseEnter={() => setActive(i)}
-                  onFocus={() => setActive(i)}
-                  className={`flex w-full items-center gap-[18px] border-b-[3px] border-ink py-4 pr-4 transition-[background-color,color,padding] duration-200 ${
-                    isActive ? 'bg-ink pl-7 text-paper' : 'pl-4'
-                  }`}
-                >
-                  <span className="flex min-w-0 flex-auto flex-col gap-1.5">
-                    <span className="display text-[length:clamp(36px,4.6vw,64px)] leading-none">{project.title}</span>
-                    <span className="text-xs tracking-[.08em] uppercase">{project.meta}</span>
-                  </span>
-                  <ArrowRight
-                    size={28}
-                    className={`shrink-0 text-rec transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-0'}`}
-                  />
-                </Link>
-              </li>
-            )
-          })}
+          {projects.map((project, i) => (
+            <Row key={project.slug} project={project} index={i} isActive={i === active} onActivate={activate} />
+          ))}
         </ul>
 
         <Stage project={projects[active]} />
       </Reveal>
 
-      {/* Celular y tablet: tarjetas que se deslizan de costado */}
-      <div className="lg:hidden">
-        <ul className="flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {projects.map((project) => (
-            <li key={project.slug} className="shrink-0 basis-[78%] snap-start md:basis-[44%]">
-              <Link
-                to={projectUrl(project)}
-                aria-label={`Abrir ${project.title}`}
-                className="relative block aspect-[4/5] overflow-hidden border-[3px] border-ink"
-                style={{ backgroundColor: COLOR[project.tone.bg] }}
-              >
-                <Cover project={project} dotSize={Math.round(project.tone.size * 0.75)} />
-                <span className="absolute top-3 right-3 left-3">
-                  <span className="eyebrow inline-block border-2 border-ink bg-paper px-2.5 py-1.5 text-[11px] tracking-[.1em] text-ink">
-                    {project.title}
-                  </span>
-                </span>
-                <span className="display absolute right-0 bottom-0 flex items-center gap-2.5 bg-ink py-3 pr-4 pl-7 text-lg tracking-[.04em] text-paper cut-tab-sm">
-                  Ver
-                  <ArrowRight size={18} className="text-rec" />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <p className="eyebrow flex items-center gap-2.5 px-4 pt-2 tracking-[.1em]">
-          <span>Deslizá</span>
-          <ArrowRight size={20} />
-        </p>
-      </div>
+      <MobileCards />
     </section>
   )
 }
 
-function Stage({ project }) {
+const Row = memo(function Row({ project, index, isActive, onActivate }) {
+  return (
+    <li>
+      <Link
+        to={projectUrl(project)}
+        onMouseEnter={() => onActivate(index)}
+        onFocus={() => onActivate(index)}
+        className={`flex w-full items-center gap-[18px] border-b-[3px] border-ink py-4 pr-4 transition-[background-color,color,padding] duration-200 ${
+          isActive ? 'bg-ink pl-7 text-paper' : 'pl-4'
+        }`}
+      >
+        <span className="flex min-w-0 flex-auto flex-col gap-1.5">
+          <span className="display text-[length:clamp(36px,4.6vw,64px)] leading-none">{project.title}</span>
+          <span className="text-xs tracking-[.08em] uppercase">{project.meta}</span>
+        </span>
+        <ArrowRight
+          size={28}
+          className={`shrink-0 text-rec transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </Link>
+    </li>
+  )
+})
+
+/* Celular y tablet: tarjetas que se deslizan de costado */
+const MobileCards = memo(function MobileCards() {
+  return (
+  <div className="lg:hidden">
+    <ul className="flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {projects.map((project) => (
+        <li key={project.slug} className="shrink-0 basis-[78%] snap-start md:basis-[44%]">
+          <Link
+            to={projectUrl(project)}
+            aria-label={`Abrir ${project.title}`}
+            className="relative block aspect-[4/5] overflow-hidden border-[3px] border-ink"
+            style={{ backgroundColor: COLOR[project.tone.bg] }}
+          >
+            <Cover project={project} dotSize={Math.round(project.tone.size * 0.75)} />
+            <span className="absolute top-3 right-3 left-3">
+              <span className="eyebrow inline-block border-2 border-ink bg-paper px-2.5 py-1.5 text-[11px] tracking-[.1em] text-ink">
+                {project.title}
+              </span>
+            </span>
+            <span className="display absolute right-0 bottom-0 flex items-center gap-2.5 bg-ink py-3 pr-4 pl-7 text-lg tracking-[.04em] text-paper cut-tab-sm">
+              Ver
+              <ArrowRight size={18} className="text-rec" />
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+    <p className="eyebrow flex items-center gap-2.5 px-4 pt-2 tracking-[.1em]">
+      <span>Deslizá</span>
+      <ArrowRight size={20} />
+    </p>
+  </div>
+  )
+})
+
+const Stage = memo(function Stage({ project }) {
   return (
     <Link
       to={projectUrl(project)}
@@ -123,10 +133,10 @@ function Stage({ project }) {
       </span>
     </Link>
   )
-}
+})
 
 /** Imagen de portada del proyecto o, si todavía no hay, la trama de puntos */
-function Cover({ project, dotSize }) {
+const Cover = memo(function Cover({ project, dotSize }) {
   if (project.media.cover) {
     return (
       <img
@@ -139,4 +149,4 @@ function Cover({ project, dotSize }) {
     )
   }
   return <Halftone dot={project.tone.dot} size={dotSize} />
-}
+})

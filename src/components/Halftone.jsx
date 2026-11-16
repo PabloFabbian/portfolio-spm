@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { COLOR } from '../lib/tokens'
 
 /**
  * Trama de semitono (puntos) que se desvanece hacia abajo.
  * Es el relleno de los espacios donde todavía no hay foto o video.
  */
-export function Halftone({ dot = 'ink', size = 14, fade = 75, className = '' }) {
+export const Halftone = memo(function Halftone({ dot = 'ink', size = 14, fade = 75, className = '' }) {
   const mask = `linear-gradient(180deg, #000 5%, transparent ${fade}%)`
   return (
     <div
@@ -18,4 +19,4 @@ export function Halftone({ dot = 'ink', size = 14, fade = 75, className = '' }) 
       }}
     />
   )
-}
+})
