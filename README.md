@@ -62,7 +62,7 @@ portfolio-spm/
 - **Avisos de lo que falta:** mientras falte un archivo, la web muestra un aviso del estilo **[Falta afiche.jpg]** con el nombre exacto.
 - **Galería:** la pieza 1 de `galeria.piezas` usa `galeria-1`, la 2 `galeria-2`… Si hay archivos de más, se agregan solos. Foto o video se decide por la extensión.
 - **Encuadre e inicio:** cada foto o video puede tener `encuadre` (`"30% 70%"`, el `object-position` del recorte) y los videos, `inicio` (desde qué segundo arranca el clip de 15 s). Van en `medios` de `sitio.json` y de cada proyecto (`medios.tarjeta`, `medios["video-principal"]`…) y en cada pieza del carrusel.
-- **Videos en Cloudinary:** un video subido desde el editor queda anotado como `nube: { cuenta, id, version, ancho, alto, duracion }` y tiene prioridad sobre un archivo con el mismo nombre. `src/lib/nube.js` arma la dirección: desde `inicio`, 15 segundos, sin sonido, `c_limit` a 1600 px (video principal) o 1280 px (carrusel), `q_auto` y MP4/H.264 escrito (`f_mp4,vc_h264`), más un cuadro fijo `.jpg` para el `poster`. El formato va explícito para que la cuenta no le sume ajustes automáticos y la dirección coincida exactamente con lo que se preparó.
+- **Videos en Cloudinary:** un video subido desde el editor queda anotado como `nube: { cuenta, id, version, ancho, alto, duracion }` y tiene prioridad sobre un archivo con el mismo nombre. `src/lib/nube.js` arma la dirección: desde `inicio`, 15 segundos, sin sonido, `c_limit` a 1600 px (video principal) o 1280 px (carrusel), `q_auto:best` y MP4/H.264 escrito (`f_mp4,vc_h264`), más un cuadro fijo `.jpg` para el `poster`. El formato va explícito para que la cuenta no le sume ajustes automáticos y la dirección coincida exactamente con lo que se preparó.
 - **Reproducción:** `src/components/Video.jsx` no descarga nada hasta que el video se ve (`preload="none"` con póster) y reproduce solo lo que está en pantalla: el carrusel dibuja cada pieza 3 veces y solo corre la copia visible. Los videos del repo (sin recortar) arrancan en `inicio` desde el navegador.
 
 ## Editor de contenido (`/editar`)
@@ -165,8 +165,8 @@ Ojo: publicar desde la compu escribe de verdad en GitHub, en la rama indicada, y
 1. Importá el repositorio en Vercel (**Add New → Project**). Detecta Vite solo: build `npm run build`, salida `dist`. La carpeta `api/` se publica sola como funciones.
 2. En **Settings → Environment Variables**, cargá `VITE_SITE_URL` con el dominio, sin barra final, y las variables del editor (ver arriba). Después hacé **Redeploy** para que se apliquen.
 3. `vercel.json`:
-   - Resuelve las rutas de la web (`/proyectos/...`, `/editar`) al recargar, sin tocar `/api`.
-   - Cachea los archivos con hash.
+   - Resuelve las rutas de la web (`/proyectos/...`, `/editar`) al recargar, sin tocar `/api` ni `/assets`: un archivo que falta da 404 en vez de devolver la página de inicio.
+   - No les pone caché largo a los archivos con hash de `/assets`: si un navegador pide uno justo en un despliegue y la respuesta no es la correcta, la guardaría por un año y la web quedaría en blanco.
    - Marca `/editar` como `noindex` y le da 30 segundos a las funciones.
   - Solo deja mostrar la web dentro de un recuadro desde la misma web (la vista previa del editor): otra página no puede meterla en un iframe.
 

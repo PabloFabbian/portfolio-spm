@@ -35,7 +35,7 @@ const tamano = (uso) => {
 /** El clip: desde "inicio", 15 segundos, sin sonido, achicado y comprimido (MP4, H.264) */
 export function transformacionDelClip(uso, inicio = 0) {
   const tramo = decimas(inicio) > 0 ? `du_${DURACION_DEL_CLIP},so_${segundos(inicio)}` : `du_${DURACION_DEL_CLIP}`
-  return `${tramo}/${tamano(uso)}/ac_none,f_mp4,q_auto,vc_h264`
+  return `${tramo}/${tamano(uso)}/ac_none,f_mp4,q_auto:best,vc_h264`
 }
 
 /** El cuadro fijo que se ve mientras carga el clip (el primero del clip) */
